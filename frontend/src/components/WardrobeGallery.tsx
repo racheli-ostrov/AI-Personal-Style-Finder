@@ -1,7 +1,33 @@
 import React from 'react';
 import './WardrobeGallery.css';
 
-const WardrobeGallery = ({ items, onDelete, onToggleFavorite, onSelectItem }) => {
+interface WardrobeItemAnalysis {
+  itemType: string;
+  colors?: string[];
+  style: string;
+  formality: string;
+}
+
+interface WardrobeItem {
+  id: string;
+  imageData?: string;
+  analysis: WardrobeItemAnalysis;
+  favorite: boolean;
+}
+
+interface WardrobeGalleryProps {
+  items: WardrobeItem[];
+  onDelete: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
+  onSelectItem?: (item: WardrobeItem) => void;
+}
+
+const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({ 
+  items, 
+  onDelete, 
+  onToggleFavorite, 
+  onSelectItem 
+}) => {
   if (items.length === 0) {
     return (
       <div className="empty-wardrobe">

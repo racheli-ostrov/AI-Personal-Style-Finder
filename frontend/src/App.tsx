@@ -5,17 +5,37 @@ import StyleProfile from './components/StyleProfile';
 import { wardrobeAPI } from './services/api';
 import './App.css';
 
+interface Notification {
+  message: string;
+  type: 'info' | 'success' | 'error';
+}
+
+interface WardrobeItem {
+  id: string;
+  imageUrl: string;
+  analysis: {
+    clothing_type: string;
+    style: string;
+    colors: string[];
+    occasions: string[];
+    season: string;
+    description: string;
+  };
+  isFavorite: boolean;
+  timestamp: string;
+}
+
 function App() {
-  const [wardrobeItems, setWardrobeItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState(null);
+  const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [notification, setNotification] = useState<Notification | null>(null);
 
   // Load wardrobe on mount
   useEffect(() => {
     loadWardrobe();
   }, []);
 
-  const loadWardrobe = async () => {
+  const loadWardrobe = async (): Promise<void> => {
     try {
       const result = await wardrobeAPI.getAll();
       if (result.success) {
@@ -29,12 +49,12 @@ function App() {
     }
   };
 
-  const handleAnalysisComplete = () => {
+  const handleAnalysisComplete = (): void => {
     showNotification('Item added to wardrobe! ✨', 'success');
     loadWardrobe();
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string): Promise<void> => {
     try {
       await wardrobeAPI.deleteItem(id);
       setWardrobeItems(items => items.filter(item => item.id !== id));
@@ -45,7 +65,7 @@ function App() {
     }
   };
 
-  const handleToggleFavorite = async (id) => {
+  const handleToggleFavorite = async (id: string): Promise<void> => {
     try {
       const result = await wardrobeAPI.toggleFavorite(id);
       if (result.success) {
@@ -61,7 +81,7 @@ function App() {
     }
   };
 
-  const showNotification = (message, type = 'info') => {
+  const showNotification = (message: string, type: 'info' | 'success' | 'error' = 'info'): void => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -117,7 +137,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Powered by Google Gemini AI • Final Project 2024</p>
+        <p>Powered by Google Gemini AI & Python • 2024</p>
       </footer>
     </div>
   );

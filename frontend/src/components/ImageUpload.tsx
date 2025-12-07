@@ -1,14 +1,18 @@
 import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileRejection, DropzoneOptions } from 'react-dropzone';
 import { styleAPI, wardrobeAPI } from '../services/api';
 import './ImageUpload.css';
 
-const ImageUpload = ({ onAnalysisComplete }) => {
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
-  const [preview, setPreview] = useState(null);
+interface ImageUploadProps {
+  onAnalysisComplete?: (analysis: any) => void;
+}
 
-  const onDrop = useCallback(async (acceptedFiles) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
 
     const file = acceptedFiles[0];
@@ -18,7 +22,7 @@ const ImageUpload = ({ onAnalysisComplete }) => {
     // Create preview
     const reader = new FileReader();
     reader.onload = () => {
-      setPreview(reader.result);
+      setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
 
@@ -28,7 +32,7 @@ const ImageUpload = ({ onAnalysisComplete }) => {
       
       if (result.success) {
         // Add to wardrobe
-        await wardrobeAPI.addItem(result.data.analysis, reader.result);
+        await wardrobeAPI.addItem(result.data.analysis, reader.result as string);
         
         if (onAnalysisComplete) {
           onAnalysisComplete(result.data.analysis);
@@ -39,7 +43,7 @@ const ImageUpload = ({ onAnalysisComplete }) => {
           setPreview(null);
         }, 2000);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload error:', err);
       setError(err.response?.data?.error?.message || 'Failed to analyze image. Please try again.');
     } finally {
@@ -47,14 +51,16 @@ const ImageUpload = ({ onAnalysisComplete }) => {
     }
   }, [onAnalysisComplete]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const dropzoneOptions: DropzoneOptions = {
     onDrop,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp']
     },
     maxFiles: 1,
     disabled: uploading
-  });
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
   return (
     <div className="image-upload">
