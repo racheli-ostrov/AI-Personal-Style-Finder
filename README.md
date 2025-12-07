@@ -1,0 +1,372 @@
+# AI Personal Style Finder 👗✨
+
+![Architecture](./docs/architecture-diagram.png)
+
+## 🎯 Project Overview
+
+**AI Personal Style Finder** is a production-level web application that uses AI to analyze clothing items from a user's wardrobe and provide personalized style recommendations. Built with React, Node.js, and Google Gemini AI.
+
+### Target Users
+- Fashion enthusiasts who want to understand their personal style
+- Online shoppers looking for personalized recommendations
+- People wanting to optimize their wardrobe and shopping decisions
+
+### Key Features
+- 📸 **Image Upload & Analysis** - Upload clothing photos for AI-powered analysis
+- 🧠 **AI Style Detection** - Gemini AI identifies colors, patterns, fabrics, and style categories
+- 👕 **Virtual Wardrobe** - Manage your clothing collection with favorites and filtering
+- 💎 **Personal Style Profile** - Generate comprehensive style insights from your wardrobe
+- 🛍️ **Smart Recommendations** - Get shopping suggestions based on your unique style
+
+---
+
+## 🏗️ System Architecture
+
+```
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│                 │         │                 │         │                 │
+│  React Frontend │◄───────►│  Node.js API    │◄───────►│  Gemini AI API  │
+│  (Port 3000)    │   REST  │  (Port 5000)    │   AI    │  (Google)       │
+│                 │         │                 │         │                 │
+└─────────────────┘         └─────────────────┘         └─────────────────┘
+        │                           │
+        │                           │
+        ▼                           ▼
+┌─────────────────┐         ┌─────────────────┐
+│  Docker         │         │  In-Memory      │
+│  Container      │         │  Storage        │
+└─────────────────┘         └─────────────────┘
+```
+
+### Components
+
+#### Frontend (React)
+- **Image Upload Component** - Drag & drop interface with react-dropzone
+- **Wardrobe Gallery** - Grid display with favorites and filtering
+- **Style Profile** - AI-generated style analysis and recommendations
+- **Responsive Design** - Mobile-first CSS with modern aesthetics
+
+#### Backend (Node.js + Express) - MVC Architecture
+**Routes Layer** - URL endpoint definitions
+- `/api/style/*` - Style analysis endpoints
+- `/api/wardrobe/*` - Wardrobe management endpoints
+
+**Controller Layer** - Request handling
+- `styleAnalysisController.js` - Handles AI analysis requests
+- `wardrobeController.js` - Handles wardrobe operations
+
+**Service Layer** - Business logic
+- `geminiService.js` - Gemini AI integration
+- `styleAnalysisService.js` - Style analysis logic
+- `wardrobeService.js` - Wardrobe management logic
+
+**Architecture Benefits**:
+- Clear separation of concerns
+- Easy to test and maintain
+- Scalable and professional structure
+
+#### AI Integration (Gemini API)
+- **Image Analysis** - Identifies clothing type, colors, patterns, fabric
+- **Style Profiling** - Analyzes wardrobe to determine personal style
+- **Recommendations** - Generates shopping suggestions and style tips
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- Docker & Docker Compose
+- Gemini API Key ([Get one here](https://makersuite.google.com/app/apikey))
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone <your-repo-url>
+cd final_project
+```
+
+2. **Set up environment variables**
+
+Backend:
+```bash
+cd backend
+cp .env.example .env
+# Edit .env and add your GEMINI_API_KEY
+```
+
+Frontend:
+```bash
+cd frontend
+cp .env.example .env
+# Edit .env if needed (default: http://localhost:5000/api)
+```
+
+3. **Install dependencies**
+
+Backend:
+```bash
+cd backend
+npm install
+```
+
+Frontend:
+```bash
+cd frontend
+npm install
+```
+
+---
+
+## 🏃 Running the Application
+
+### Option 1: Docker (Recommended)
+
+```bash
+# From project root
+cp .env.example .env
+# Edit .env and add your GEMINI_API_KEY
+
+docker-compose up --build
+```
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000
+
+### Option 2: Development Mode
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm run dev
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm start
+```
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd backend
+npm test              # Run tests once
+npm run test:watch    # Watch mode
+```
+
+### Frontend Tests
+```bash
+cd frontend
+npm test              # Run tests with coverage
+npm run test:watch    # Watch mode
+```
+
+### Integration Tests
+Docker Compose includes health checks that validate both services are running correctly.
+
+---
+
+## 🐳 Docker Configuration
+
+### Backend Dockerfile
+- Base: `node:18-alpine`
+- Production dependencies only
+- Health check endpoint: `/api/health`
+- Exposed port: 5000
+
+### Frontend Dockerfile
+- Multi-stage build
+- Build stage: Node.js 18
+- Production stage: nginx:alpine
+- Custom nginx config for React Router
+- Exposed port: 80
+
+### Docker Compose
+- Orchestrates frontend + backend
+- Environment variable management
+- Volume mounting for uploads
+- Health checks for both services
+
+---
+
+## 🔄 CI/CD Pipeline
+
+GitHub Actions workflow includes:
+
+1. **Backend Job**
+   - Install dependencies
+   - Run tests with coverage
+   - Build Docker image
+   - Upload artifacts
+
+2. **Frontend Job**
+   - Install dependencies
+   - Run tests with coverage
+   - Build React app
+   - Build Docker image
+   - Upload artifacts
+
+3. **Integration Job**
+   - Load Docker images
+   - Start with docker-compose
+   - Health check validation
+   - API endpoint testing
+
+4. **Deploy Job** (on main branch)
+   - Load production images
+   - Deploy to cloud (customizable)
+
+### Setting up CI/CD
+
+1. Push code to GitHub
+2. Add `GEMINI_API_KEY` to GitHub Secrets
+3. Pipeline runs automatically on push/PR
+
+---
+
+## 📊 API Documentation
+
+### Health Check
+```
+GET /api/health
+Response: { status: "healthy", message: "...", timestamp: "..." }
+```
+
+### Analyze Image
+```
+POST /api/style/analyze
+Content-Type: multipart/form-data
+Body: { image: <file> }
+Response: { success: true, data: { analysis: {...}, imageInfo: {...} } }
+```
+
+### Generate Style Profile
+```
+POST /api/style/profile
+Body: { wardrobeItems: [...] }
+Response: { success: true, data: { dominantStyle, colorPalette, ... } }
+```
+
+### Get Wardrobe
+```
+GET /api/wardrobe
+Response: { success: true, data: [...], count: N }
+```
+
+### Add to Wardrobe
+```
+POST /api/wardrobe
+Body: { analysis: {...}, imageData: "..." }
+Response: { success: true, data: {...} }
+```
+
+---
+
+## 🎓 Technology Stack
+
+### Frontend
+- **React 18** - UI framework
+- **Axios** - HTTP client
+- **React Dropzone** - File upload
+- **Jest + React Testing Library** - Testing
+
+### Backend
+- **Node.js 18** - Runtime
+- **Express** - Web framework
+- **Multer** - File upload handling
+- **@google/generative-ai** - Gemini API client
+- **Jest + Supertest** - Testing
+
+### DevOps
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **GitHub Actions** - CI/CD pipeline
+- **Nginx** - Frontend web server
+
+---
+
+## 🎤 Presentation Guide
+
+### Demo Flow (5 minutes)
+1. **Introduction** - Problem statement and target users
+2. **Live Demo**
+   - Upload clothing image
+   - Show AI analysis results
+   - Display wardrobe gallery
+   - Generate style profile
+   - Show recommendations
+
+### Technical Explanation (7 minutes)
+3. **Architecture Overview** - System components diagram
+4. **AI Integration** - Gemini API workflow and prompts
+5. **Backend** - Express routes and service architecture
+6. **Frontend** - React components and state management
+7. **Testing** - Unit tests, integration tests, coverage
+8. **Docker** - Containerization strategy
+9. **CI/CD** - GitHub Actions pipeline walkthrough
+
+### Reflection (3 minutes)
+10. **Challenges** - What was difficult and how you solved it
+11. **Failures** - What didn't work initially
+12. **Key Learnings** - Most important technical takeaways
+13. **Future Improvements** - What would you add next
+
+---
+
+## 🚧 Challenges & Solutions
+
+### Challenge 1: Gemini API Response Parsing
+**Problem**: Gemini sometimes returns non-JSON formatted responses
+**Solution**: Regex extraction to find JSON within response text
+
+### Challenge 2: Image Size Limits
+**Problem**: Large images caused slow uploads and timeouts
+**Solution**: 10MB file size limit + client-side validation
+
+### Challenge 3: Docker Networking
+**Problem**: Frontend couldn't reach backend in containers
+**Solution**: Proper CORS configuration + docker-compose networking
+
+---
+
+## 📈 Future Improvements
+
+- [ ] **Database Integration** - PostgreSQL for persistent storage
+- [ ] **User Authentication** - Login system with JWT
+- [ ] **Shopping API Integration** - Real product recommendations
+- [ ] **Social Features** - Share wardrobes and style profiles
+- [ ] **Advanced Filtering** - Search by color, type, season
+- [ ] **Outfit Generator** - AI suggests complete outfits
+- [ ] **Mobile App** - React Native version
+
+---
+
+## 👥 Contributors
+
+**Your Names Here**
+- Partner 1: [Role/Responsibilities]
+- Partner 2: [Role/Responsibilities]
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🙏 Acknowledgments
+
+- Google Gemini AI for powerful image analysis
+- React community for excellent documentation
+- Docker for containerization platform
+- GitHub Actions for CI/CD automation
+
+---
+
+**Built with ❤️ for Final Project 2024**
