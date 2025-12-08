@@ -55,6 +55,8 @@ const DailyOutfitSuggestion: React.FC<DailyOutfitSuggestionProps> = ({ wardrobeI
       // Get weather data from WeatherAPI.com
       const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
       
+      console.log('Weather API Key:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT FOUND');
+      
       if (!apiKey) {
         throw new Error('Weather API key not configured. Please add REACT_APP_WEATHER_API_KEY to your .env file');
       }
@@ -63,8 +65,12 @@ const DailyOutfitSuggestion: React.FC<DailyOutfitSuggestionProps> = ({ wardrobeI
         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}&aqi=no`
       );
       
+      console.log('Weather API response status:', weatherResponse.status);
+      
       if (!weatherResponse.ok) {
-        throw new Error('Failed to fetch weather data');
+        const errorText = await weatherResponse.text();
+        console.error('Weather API error:', errorText);
+        throw new Error(`Failed to fetch weather data: ${weatherResponse.status}`);
       }
       
       const weatherData = await weatherResponse.json();
@@ -138,9 +144,13 @@ const DailyOutfitSuggestion: React.FC<DailyOutfitSuggestionProps> = ({ wardrobeI
 
     const bottoms = items.filter(item => {
       const type = getItemType(item);
-      return type.includes('pants') || type.includes('jeans') || type.includes('מכנסיים') ||
+      const isBottom = type.includes('pants') || type.includes('jeans') || type.includes('מכנסיים') ||
              type.includes('shorts') || type.includes('skirt') || type.includes('חצאית') ||
-             type.includes('trousers');
+             type.includes('trousers') || type.includes('leggings');
+      if (isBottom) {
+        console.log('Found bottom item:', type);
+      }
+      return isBottom;
     });
 
     const outerwear = items.filter(item => {
