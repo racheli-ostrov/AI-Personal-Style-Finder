@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone, FileRejection, DropzoneOptions } from 'react-dropzone';
 import { styleAPI, wardrobeAPI } from '../services/api';
+import CameraCapture from './CameraCapture';
 import './ImageUpload.css';
 
 interface ImageUploadProps {
@@ -11,6 +12,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [showCamera, setShowCamera] = useState<boolean>(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -19,21 +21,25 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
     setError(null);
     setUploading(true);
 
-    // Create preview
+    // Create preview and wait for it to load
     const reader = new FileReader();
-    reader.onload = () => {
-      setPreview(reader.result as string);
-    };
+    const imageDataPromise = new Promise<string>((resolve) => {
+      reader.onload = () => {
+        const result = reader.result as string;
+        setPreview(result);
+        resolve(result);
+      };
+    });
     reader.readAsDataURL(file);
 
     try {
-      // Analyze image with Gemini AI
+      // Wait for image to load and get the data
+      const imageData = await imageDataPromise;
+      
+      // Analyze image with Gemini AI - this will automatically add to wardrobe
       const result = await styleAPI.analyzeImage(file);
       
       if (result.success) {
-        // Add to wardrobe
-        await wardrobeAPI.addItem(result.data.analysis, reader.result as string);
-        
         if (onAnalysisComplete) {
           onAnalysisComplete(result.data.analysis);
         }
@@ -45,7 +51,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
       }
     } catch (err: any) {
       console.error('Upload error:', err);
-      setError(err.response?.data?.error?.message || 'Failed to analyze image. Please try again.');
+      setError(err.response?.data?.error || 'Failed to analyze image. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -62,8 +68,29 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
+  const handleCameraCapture = async (file: File) => {
+    await onDrop([file]);
+  };
+
+  const openCamera = () => {
+    setShowCamera(true);
+  };
+
+  const closeCamera = () => {
+    setShowCamera(false);
+  };
+
   return (
     <div className="image-upload">
+      {showCamera && (
+        <CameraCapture onCapture={handleCameraCapture} onClose={closeCamera} />
+      )}
+      
+      <div className="upload-buttons">
+        <button className="camera-button" onClick={openCamera} disabled={uploading}>
+          📷 Open Camera
+        </button>
+      </div>
       <div 
         {...getRootProps()} 
         className={`dropzone ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}

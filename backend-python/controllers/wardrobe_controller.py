@@ -34,13 +34,30 @@ class WardrobeController:
         try:
             data = request.get_json()
             
-            if not data or 'imageInfo' not in data or 'analysis' not in data:
+            # Support both formats: from analyze endpoint and from frontend
+            if not data or 'analysis' not in data:
                 return jsonify({
                     'success': False,
                     'error': 'Missing required fields'
                 }), 400
             
-            item = wardrobe_service.add_item(data['imageInfo'], data['analysis'])
+            # Get imageInfo - either from data or create from imageData
+            image_info = data.get('imageInfo')
+            if not image_info and 'imageData' in data:
+                # Create basic imageInfo from imageData
+                image_info = {
+                    'filename': 'uploaded_image.jpg',
+                    'mimetype': 'image/jpeg',
+                    'data': data['imageData']
+                }
+            
+            if not image_info:
+                return jsonify({
+                    'success': False,
+                    'error': 'Missing image information'
+                }), 400
+            
+            item = wardrobe_service.add_item(image_info, data['analysis'])
             
             return jsonify({
                 'success': True,
@@ -49,6 +66,8 @@ class WardrobeController:
             
         except Exception as e:
             print(f'Error in addItem controller: {str(e)}')
+            import traceback
+            traceback.print_exc()
             return jsonify({
                 'success': False,
                 'error': 'Failed to add item'

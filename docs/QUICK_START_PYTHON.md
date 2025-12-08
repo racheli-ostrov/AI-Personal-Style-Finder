@@ -35,7 +35,7 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Edit .env and add your Gemini API key
-GEMINI_API_KEY=your_actual_api_key_here
+GEMINI_API_KEY=AIzaSyDyPhZk8DpHs3G24-DmjzMuJKLNWtVtWVU
 ```
 
 ## 🚀 Running the Application

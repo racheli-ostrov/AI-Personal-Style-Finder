@@ -29,15 +29,19 @@ class WardrobeService:
         Add a new item to the wardrobe
         
         Args:
-            image_info: Image metadata (filename, size, mimetype)
+            image_info: Image metadata (filename, size, mimetype, data)
             analysis: AI analysis results
             
         Returns:
             The newly created item
         """
+        # Extract imageData from image_info if it exists
+        image_data = image_info.get('data', '')
+        
         new_item = {
             'id': self.item_id_counter,
             'imageInfo': image_info,
+            'imageData': image_data,  # Store the actual image data
             'analysis': analysis,
             'addedAt': datetime.now().isoformat(),
             'favorite': False

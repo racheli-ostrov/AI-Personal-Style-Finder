@@ -16,13 +16,42 @@ class GeminiService:
     """Service for interacting with Gemini AI API"""
     
     def __init__(self):
-        """Initialize Gemini service"""
-        # Allow tests to run without API key
-        if not os.getenv('GEMINI_API_KEY') and os.getenv('NODE_ENV') != 'test':
-            raise ValueError('GEMINI_API_KEY is not configured')
+        """Initialize Gemini service with multiple API keys for rotation"""
+        # Load all available API keys
+        self.api_keys = []
         
-        self.api_key = os.getenv('GEMINI_API_KEY')
-        self.api_url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+        key1 = os.getenv('GEMINI_API_KEY')
+        key2 = os.getenv('GEMINI_API_KEY_2')
+        key3 = os.getenv('GEMINI_API_KEY_3')
+        
+        if key1:
+            self.api_keys.append(key1)
+        if key2:
+            self.api_keys.append(key2)
+        if key3:
+            self.api_keys.append(key3)
+        
+        if not self.api_keys and os.getenv('NODE_ENV') != 'test':
+            raise ValueError('No GEMINI_API_KEY configured')
+        
+        self.current_key_index = 0
+        
+        # Debug: Print number of keys loaded
+        print(f"🔑 Loaded {len(self.api_keys)} API key(s)")
+        for i, key in enumerate(self.api_keys, 1):
+            masked_key = f"{key[:8]}...{key[-4:]}"
+            print(f"   Key {i}: {masked_key}")
+        
+        self.api_url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
+    
+    def _get_next_api_key(self) -> str:
+        """Get the next API key in rotation"""
+        if not self.api_keys:
+            raise ValueError('No API keys available')
+        
+        key = self.api_keys[self.current_key_index]
+        self.current_key_index = (self.current_key_index + 1) % len(self.api_keys)
+        return key
     
     def analyze_clothing_image(self, image_data: bytes, mime_type: str) -> Dict[str, Any]:
         """
@@ -68,13 +97,40 @@ Provide accurate and specific information based on what you see in the image."""
                 }]
             }
             
-            # Make API request
-            response = requests.post(
-                f'{self.api_url}?key={self.api_key}',
-                json=payload,
-                headers={'Content-Type': 'application/json'},
-                timeout=30
-            )
+            # Make API request with longer timeout for image processing
+            # Try each API key until one works
+            last_error = None
+            
+            for attempt in range(len(self.api_keys)):
+                try:
+                    current_key = self._get_next_api_key()
+                    print(f"🔄 Trying API key {self.current_key_index}/{len(self.api_keys)}")
+                    
+                    response = requests.post(
+                        f'{self.api_url}?key={current_key}',
+                        json=payload,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=60,
+                        verify=False
+                    )
+                    
+                    if response.status_code == 200:
+                        print(f"✅ Success with key {self.current_key_index}")
+                        break
+                    elif response.status_code == 429:
+                        print(f"⚠️ Key {self.current_key_index} quota exceeded, trying next key...")
+                        last_error = f'API request failed with status {response.status_code}: {response.text}'
+                        continue
+                    else:
+                        raise ValueError(f'API request failed with status {response.status_code}: {response.text}')
+                        
+                except requests.exceptions.RequestException as e:
+                    last_error = str(e)
+                    print(f"❌ Request failed with key {self.current_key_index}: {e}")
+                    continue
+            else:
+                # All keys failed
+                raise ValueError(f'All API keys exhausted. Last error: {last_error}')
             
             if response.status_code != 200:
                 raise ValueError(f'API request failed with status {response.status_code}: {response.text}')
@@ -148,13 +204,34 @@ Be specific and personalized based on the actual wardrobe items."""
                 }]
             }
             
-            # Make API request
-            response = requests.post(
-                f'{self.api_url}?key={self.api_key}',
-                json=payload,
-                headers={'Content-Type': 'application/json'},
-                timeout=30
-            )
+            # Make API request with key rotation
+            last_error = None
+            
+            for attempt in range(len(self.api_keys)):
+                try:
+                    current_key = self._get_next_api_key()
+                    
+                    response = requests.post(
+                        f'{self.api_url}?key={current_key}',
+                        json=payload,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=60,
+                        verify=False
+                    )
+                    
+                    if response.status_code == 200:
+                        break
+                    elif response.status_code == 429:
+                        last_error = f'API request failed with status {response.status_code}: {response.text}'
+                        continue
+                    else:
+                        raise ValueError(f'API request failed with status {response.status_code}: {response.text}')
+                        
+                except requests.exceptions.RequestException as e:
+                    last_error = str(e)
+                    continue
+            else:
+                raise ValueError(f'All API keys exhausted. Last error: {last_error}')
             
             if response.status_code != 200:
                 raise ValueError(f'API request failed with status {response.status_code}: {response.text}')
@@ -238,7 +315,8 @@ Suggest 3-5 best matching items."""
                 f'{self.api_url}?key={self.api_key}',
                 json=payload,
                 headers={'Content-Type': 'application/json'},
-                timeout=30
+                timeout=60,
+                verify=False
             )
             
             if response.status_code != 200:

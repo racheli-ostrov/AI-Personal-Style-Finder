@@ -39,13 +39,13 @@ export const styleAPI = {
 export const wardrobeAPI = {
   // Get all wardrobe items
   getAll: async () => {
-    const response = await api.get('/wardrobe');
+    const response = await api.get('/wardrobe/');
     return response.data;
   },
 
   // Add item to wardrobe
   addItem: async (analysis, imageData) => {
-    const response = await api.post('/wardrobe', { analysis, imageData });
+    const response = await api.post('/wardrobe/', { analysis, imageData });
     return response.data;
   },
 
@@ -63,7 +63,7 @@ export const wardrobeAPI = {
 
   // Clear wardrobe
   clearAll: async () => {
-    const response = await api.delete('/wardrobe');
+    const response = await api.delete('/wardrobe/');
     return response.data;
   },
 };

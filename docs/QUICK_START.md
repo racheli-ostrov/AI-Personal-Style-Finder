@@ -217,7 +217,7 @@ netstat -ano | findstr :5000
 
 **Problem: "GEMINI_API_KEY is not configured"**
 - Make sure you created `.env` file in backend folder
-- Add: `GEMINI_API_KEY=AIzaSyDNRsQDY3ci3mlQg4HPbkd71ojyhkpQbM4`
+- Add: `GEMINI_API_KEY=AIzaSyDyPhZk8DpHs3G24-DmjzMuJKLNWtVtWVU`
 - Restart the server
 
 **Problem: "npm ci failed"**
@@ -271,7 +271,7 @@ npm test
 
 ```env
 # Required
-GEMINI_API_KEY=AIzaSyDNRsQDY3ci3mlQg4HPbkd71ojyhkpQbM4
+GEMINI_API_KEY=AIzaSyDyPhZk8DpHs3G24-DmjzMuJKLNWtVtWVU
 
 # Optional (with defaults)
 PORT=5000
@@ -290,7 +290,7 @@ REACT_APP_API_URL=http://localhost:5000/api
 
 ```env
 # Required
-GEMINI_API_KEY=AIzaSyDNRsQDY3ci3mlQg4HPbkd71ojyhkpQbM4
+GEMINI_API_KEY=AIzaSyDyPhZk8DpHs3G24-DmjzMuJKLNWtVtWVU
 ```
 
 ---

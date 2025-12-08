@@ -1,16 +1,26 @@
 * {
   box-sizing: border-box;
+  font-family: 'Calibri Light', 'Calibri', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Calibri Light', 'Calibri', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(to bottom, #f0f9ff 0%, #ffffff 100%);
   min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Calibri Light', 'Calibri', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+button, input, textarea, select {
+  font-family: 'Calibri Light', 'Calibri', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
 }
 
 .App {
@@ -95,7 +105,7 @@ body {
 }
 
 .notification.success {
-  background-color: #10b981;
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
   color: white;
 }
 
@@ -105,7 +115,7 @@ body {
 }
 
 .notification.info {
-  background-color: #3b82f6;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
   color: white;
 }
 

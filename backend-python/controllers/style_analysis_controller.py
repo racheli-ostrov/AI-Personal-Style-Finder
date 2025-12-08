@@ -35,11 +35,16 @@ class StyleAnalysisController:
             image_data = file.read()
             mime_type = file.content_type
             
+            # Convert image to base64 for storage
+            import base64
+            image_base64 = f"data:{mime_type};base64," + base64.b64encode(image_data).decode('utf-8')
+            
             # Prepare image info
             image_info = {
                 'filename': file.filename,
                 'size': len(image_data),
-                'mimetype': mime_type
+                'mimetype': mime_type,
+                'data': image_base64  # Add the base64 image data
             }
             
             # Analyze image

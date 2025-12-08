@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImageUpload from './components/ImageUpload';
 import WardrobeGallery from './components/WardrobeGallery';
 import StyleProfile from './components/StyleProfile';
+import DailyOutfitSuggestion from './components/DailyOutfitSuggestion';
 import { wardrobeAPI } from './services/api';
 import { WardrobeItem, Notification } from './types';
 import './App.css';
@@ -109,6 +110,12 @@ function App() {
             />
           </section>
 
+          {wardrobeItems.length >= 2 && (
+            <section className="outfit-suggestion-section">
+              <DailyOutfitSuggestion wardrobeItems={wardrobeItems} />
+            </section>
+          )}
+
           {wardrobeItems.length > 0 && (
             <section className="profile-section">
               <StyleProfile wardrobeItems={wardrobeItems} />
@@ -118,7 +125,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Powered by Google Gemini AI & Python • 2024</p>
+        <p>Powered by Google Gemini AI & Python • 2025</p>
       </footer>
     </div>
   );
