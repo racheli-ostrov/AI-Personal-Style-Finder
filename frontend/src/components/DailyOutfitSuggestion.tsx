@@ -212,7 +212,7 @@ const DailyOutfitSuggestion: React.FC<DailyOutfitSuggestionProps> = ({ wardrobeI
     // Strategy 3: Need complete outfit
     else {
       // We don't have tops, bottoms, or dresses
-      missingItems.push('a dress OR (a top and bottoms)');
+      missingItems.push('a dress OR (a shirt and skirt/pants)');
       
       // Add whatever items we have
       if (outerwear.length > 0) selectedItems.push(outerwear[0]);

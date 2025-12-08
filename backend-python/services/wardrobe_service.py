@@ -9,37 +9,51 @@ class WardrobeService:
     """Service for managing wardrobe items"""
     
     def __init__(self):
-        """Initialize wardrobe service with in-memory storage"""
-        self.wardrobe: List[Dict] = []
-        self.item_id_counter = 1
+        """Initialize wardrobe service with in-memory storage per user"""
+        # Dictionary to store wardrobes per user: {userId: {items: [], counter: int}}
+        self.wardrobes: Dict[str, Dict] = {}
     
-    def get_all_items(self) -> List[Dict]:
-        """Get all wardrobe items"""
-        return self.wardrobe.copy()
+    def _get_user_wardrobe(self, user_id: str) -> Dict:
+        """Get or create wardrobe for specific user"""
+        if user_id not in self.wardrobes:
+            self.wardrobes[user_id] = {
+                'items': [],
+                'counter': 1
+            }
+        return self.wardrobes[user_id]
     
-    def get_item_by_id(self, item_id: int) -> Optional[Dict]:
-        """Get a specific item by ID"""
-        for item in self.wardrobe:
+    def get_all_items(self, user_id: str) -> List[Dict]:
+        """Get all wardrobe items for specific user"""
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        return user_wardrobe['items'].copy()
+    
+    def get_item_by_id(self, user_id: str, item_id: int) -> Optional[Dict]:
+        """Get a specific item by ID for specific user"""
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        for item in user_wardrobe['items']:
             if item['id'] == item_id:
                 return item.copy()
         return None
     
-    def add_item(self, image_info: Dict, analysis: Dict) -> Dict:
+    def add_item(self, user_id: str, image_info: Dict, analysis: Dict) -> Dict:
         """
-        Add a new item to the wardrobe
+        Add a new item to the wardrobe for specific user
         
         Args:
+            user_id: User identifier
             image_info: Image metadata (filename, size, mimetype, data)
             analysis: AI analysis results
             
         Returns:
             The newly created item
         """
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        
         # Extract imageData from image_info if it exists
         image_data = image_info.get('data', '')
         
         new_item = {
-            'id': self.item_id_counter,
+            'id': user_wardrobe['counter'],
             'imageInfo': image_info,
             'imageData': image_data,  # Store the actual image data
             'analysis': analysis,
@@ -47,67 +61,78 @@ class WardrobeService:
             'favorite': False
         }
         
-        self.item_id_counter += 1
-        self.wardrobe.append(new_item)
+        user_wardrobe['counter'] += 1
+        user_wardrobe['items'].append(new_item)
         
         return new_item.copy()
     
-    def delete_item(self, item_id: int) -> bool:
+    def delete_item(self, user_id: str, item_id: int) -> bool:
         """
-        Delete an item from the wardrobe
+        Delete an item from the wardrobe for specific user
         
         Args:
+            user_id: User identifier
             item_id: ID of item to delete
             
         Returns:
             True if deleted, False if not found
         """
-        for i, item in enumerate(self.wardrobe):
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        for i, item in enumerate(user_wardrobe['items']):
             if item['id'] == item_id:
-                self.wardrobe.pop(i)
+                user_wardrobe['items'].pop(i)
                 return True
         return False
     
-    def toggle_favorite(self, item_id: int) -> Optional[Dict]:
+    def toggle_favorite(self, user_id: str, item_id: int) -> Optional[Dict]:
         """
-        Toggle favorite status of an item
+        Toggle favorite status of an item for specific user
         
         Args:
+            user_id: User identifier
             item_id: ID of item to toggle
             
         Returns:
             Updated item or None if not found
         """
-        for item in self.wardrobe:
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        for item in user_wardrobe['items']:
             if item['id'] == item_id:
                 item['favorite'] = not item['favorite']
                 return item.copy()
         return None
     
-    def clear_wardrobe(self) -> None:
-        """Clear all items from wardrobe"""
-        self.wardrobe.clear()
-        self.item_id_counter = 1
+    def clear_wardrobe(self, user_id: str) -> None:
+        """Clear all items from wardrobe for specific user"""
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        user_wardrobe['items'].clear()
+        user_wardrobe['counter'] = 1
     
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self, user_id: str) -> Dict[str, Any]:
         """
-        Calculate wardrobe statistics
+        Calculate wardrobe statistics for specific user
         
+        Args:
+            user_id: User identifier
+            
         Returns:
             Dict containing statistics
         """
-        total_items = len(self.wardrobe)
-        favorite_items = sum(1 for item in self.wardrobe if item.get('favorite', False))
+        user_wardrobe = self._get_user_wardrobe(user_id)
+        items = user_wardrobe['items']
+        
+        total_items = len(items)
+        favorite_items = sum(1 for item in items if item.get('favorite', False))
         
         # Count item types
         item_types: Dict[str, int] = {}
-        for item in self.wardrobe:
+        for item in items:
             item_type = item.get('analysis', {}).get('type', 'unknown')
             item_types[item_type] = item_types.get(item_type, 0) + 1
         
         # Count dominant colors
         color_counts: Dict[str, int] = {}
-        for item in self.wardrobe:
+        for item in items:
             colors = item.get('analysis', {}).get('colors', [])
             for color in colors:
                 color_counts[color] = color_counts.get(color, 0) + 1

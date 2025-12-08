@@ -6,9 +6,10 @@ import './ImageUpload.css';
 
 interface ImageUploadProps {
   onAnalysisComplete?: (analysis: any) => void;
+  onAuthRequired?: () => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete, onAuthRequired }) => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -51,7 +52,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
       }
     } catch (err: any) {
       console.error('Upload error:', err);
-      setError(err.response?.data?.error || 'Failed to analyze image. Please try again.');
+      if (err.message === 'AUTH_REQUIRED') {
+        setError('Please sign in to upload clothing items');
+        if (onAuthRequired) {
+          setTimeout(() => onAuthRequired(), 1500);
+        }
+      } else {
+        setError(err.response?.data?.error || 'Failed to analyze image. Please try again.');
+      }
     } finally {
       setUploading(false);
     }
@@ -86,40 +94,46 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete }) => {
         <CameraCapture onCapture={handleCameraCapture} onClose={closeCamera} />
       )}
       
-      <div className="upload-buttons">
+      <div className="upload-container">
         <button className="camera-button" onClick={openCamera} disabled={uploading}>
-          📷 Open Camera
+          <span className="camera-icon">📷</span>
+          <div className="camera-text">
+            <div className="camera-title">Open Camera</div>
+            <div className="camera-subtitle">Take a photo</div>
+          </div>
         </button>
-      </div>
-      <div 
-        {...getRootProps()} 
-        className={`dropzone ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
-      >
-        <input {...getInputProps()} />
-        
-        {preview ? (
-          <div className="preview-container">
-            <img src={preview} alt="Preview" className="preview-image" />
-            {uploading && (
-              <div className="upload-overlay">
-                <div className="spinner"></div>
-                <p>Analyzing with AI...</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="upload-prompt">
-            <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            <p className="upload-text">
-              {isDragActive 
-                ? 'Drop your image here...' 
-                : 'Drag & drop a clothing image, or click to select'}
-            </p>
-            <p className="upload-hint">Supports: JPG, PNG, WEBP</p>
-          </div>
-        )}
+
+        <div 
+          {...getRootProps()} 
+          className={`dropzone ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
+        >
+          <input {...getInputProps()} />
+          
+          {preview ? (
+            <div className="preview-container">
+              <img src={preview} alt="Preview" className="preview-image" />
+              {uploading && (
+                <div className="upload-overlay">
+                  <div className="spinner"></div>
+                  <p>Analyzing with AI...</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="upload-prompt">
+              <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p className="upload-text">
+                {isDragActive 
+                  ? 'Drop your image here...' 
+                  : 'Drag & drop image'}
+              </p>
+              <p className="upload-hint">or click to select</p>
+              <p className="upload-formats">JPG, PNG, WEBP</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {error && (

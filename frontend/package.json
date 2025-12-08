@@ -4,6 +4,7 @@
   "description": "Frontend for AI Personal Style Finder - Upload wardrobe photos and get personalized style recommendations",
   "private": true,
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "axios": "^1.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

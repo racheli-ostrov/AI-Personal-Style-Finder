@@ -14,7 +14,14 @@ class WardrobeController:
         Get all wardrobe items
         """
         try:
-            items = wardrobe_service.get_all_items()
+            user_id = request.args.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
+            items = wardrobe_service.get_all_items(user_id)
             return jsonify({
                 'success': True,
                 'data': items
@@ -41,6 +48,13 @@ class WardrobeController:
                     'error': 'Missing required fields'
                 }), 400
             
+            user_id = data.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
             # Get imageInfo - either from data or create from imageData
             image_info = data.get('imageInfo')
             if not image_info and 'imageData' in data:
@@ -57,7 +71,7 @@ class WardrobeController:
                     'error': 'Missing image information'
                 }), 400
             
-            item = wardrobe_service.add_item(image_info, data['analysis'])
+            item = wardrobe_service.add_item(user_id, image_info, data['analysis'])
             
             return jsonify({
                 'success': True,
@@ -79,7 +93,14 @@ class WardrobeController:
         Delete item from wardrobe
         """
         try:
-            success = wardrobe_service.delete_item(item_id)
+            user_id = request.args.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
+            success = wardrobe_service.delete_item(user_id, item_id)
             
             if not success:
                 return jsonify({
@@ -105,7 +126,14 @@ class WardrobeController:
         Toggle favorite status
         """
         try:
-            item = wardrobe_service.toggle_favorite(item_id)
+            user_id = request.args.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
+            item = wardrobe_service.toggle_favorite(user_id, item_id)
             
             if not item:
                 return jsonify({
@@ -131,7 +159,14 @@ class WardrobeController:
         Clear all items from wardrobe
         """
         try:
-            wardrobe_service.clear_wardrobe()
+            user_id = request.args.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
+            wardrobe_service.clear_wardrobe(user_id)
             
             return jsonify({
                 'success': True,
@@ -151,7 +186,14 @@ class WardrobeController:
         Get wardrobe statistics
         """
         try:
-            stats = wardrobe_service.get_statistics()
+            user_id = request.args.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
+            stats = wardrobe_service.get_statistics(user_id)
             
             return jsonify({
                 'success': True,

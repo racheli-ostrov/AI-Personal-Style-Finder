@@ -39,6 +39,14 @@ class StyleAnalysisController:
             import base64
             image_base64 = f"data:{mime_type};base64," + base64.b64encode(image_data).decode('utf-8')
             
+            # Get userId from request
+            user_id = request.form.get('userId')
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            
             # Prepare image info
             image_info = {
                 'filename': file.filename,
@@ -54,8 +62,9 @@ class StyleAnalysisController:
                 image_info
             )
             
-            # Add to wardrobe
+            # Add to wardrobe with userId
             wardrobe_item = wardrobe_service.add_item(
+                user_id,
                 image_info,
                 result['analysis']
             )
