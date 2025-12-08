@@ -1,19 +1,6 @@
 import React from 'react';
+import { WardrobeItem } from '../types';
 import './WardrobeGallery.css';
-
-interface WardrobeItemAnalysis {
-  itemType: string;
-  colors?: string[];
-  style: string;
-  formality: string;
-}
-
-interface WardrobeItem {
-  id: string;
-  imageData?: string;
-  analysis: WardrobeItemAnalysis;
-  favorite: boolean;
-}
 
 interface WardrobeGalleryProps {
   items: WardrobeItem[];
@@ -50,23 +37,27 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
         {items.map((item) => (
           <div key={item.id} className="wardrobe-item" onClick={() => onSelectItem && onSelectItem(item)}>
             <div className="item-image-container">
-              {item.imageData && (
-                <img src={item.imageData} alt={item.analysis.itemType} className="item-image" />
+              {(item.imageData || item.imageUrl) && (
+                <img 
+                  src={item.imageData || item.imageUrl} 
+                  alt={item.analysis.itemType || item.analysis.clothing_type || 'clothing'} 
+                  className="item-image" 
+                />
               )}
               
               <button
-                className={`favorite-btn ${item.favorite ? 'active' : ''}`}
+                className={`favorite-btn ${(item.favorite || item.isFavorite) ? 'active' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleFavorite(item.id);
                 }}
               >
-                {item.favorite ? '❤️' : '🤍'}
+                {(item.favorite || item.isFavorite) ? '❤️' : '🤍'}
               </button>
             </div>
             
             <div className="item-details">
-              <h3 className="item-type">{item.analysis.itemType}</h3>
+              <h3 className="item-type">{item.analysis.itemType || item.analysis.clothing_type}</h3>
               
               <div className="item-colors">
                 {item.analysis.colors?.slice(0, 3).map((color, idx) => (
@@ -76,7 +67,8 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
               
               <div className="item-tags">
                 <span className="tag">{item.analysis.style}</span>
-                <span className="tag">{item.analysis.formality}</span>
+                {item.analysis.formality && <span className="tag">{item.analysis.formality}</span>}
+                {item.analysis.season && <span className="tag">{item.analysis.season}</span>}
               </div>
               
               <button

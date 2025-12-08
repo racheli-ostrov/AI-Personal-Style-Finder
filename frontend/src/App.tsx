@@ -3,27 +3,8 @@ import ImageUpload from './components/ImageUpload';
 import WardrobeGallery from './components/WardrobeGallery';
 import StyleProfile from './components/StyleProfile';
 import { wardrobeAPI } from './services/api';
+import { WardrobeItem, Notification } from './types';
 import './App.css';
-
-interface Notification {
-  message: string;
-  type: 'info' | 'success' | 'error';
-}
-
-interface WardrobeItem {
-  id: string;
-  imageUrl: string;
-  analysis: {
-    clothing_type: string;
-    style: string;
-    colors: string[];
-    occasions: string[];
-    season: string;
-    description: string;
-  };
-  isFavorite: boolean;
-  timestamp: string;
-}
 
 function App() {
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
