@@ -10,6 +10,7 @@ package-lock.json
 .env.production.local
 *.env
 backend-python/.env
+frontend/.env
 
 # Testing
 coverage/
