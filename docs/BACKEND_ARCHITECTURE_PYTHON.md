@@ -142,7 +142,7 @@ docker run -p 5000:5000 --env-file .env style-finder-backend
 
 Create `.env` file:
 ```bash
-GEMINI_API_KEY=AIzaSyDyPhZk8DpHs3G24-DmjzMuJKLNWtVtWVU
+GEMINI_API_KEY=your-gemini-api-key
 PORT=5000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000

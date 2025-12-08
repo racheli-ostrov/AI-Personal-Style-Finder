@@ -224,7 +224,7 @@ docker-compose up
 
 ### Backend `.env`
 ```bash
-GEMINI_API_KEY=AIzaSyDyPhZk8DpHs3G24-DmjzMuJKLNWtVtWVU
+GEMINI_API_KEY=your-gemini-api-key
 PORT=5000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
