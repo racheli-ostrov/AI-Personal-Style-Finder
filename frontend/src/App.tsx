@@ -8,6 +8,7 @@ import { wardrobeAPI } from './services/api';
 import { WardrobeItem, Notification } from './types';
 import './App.css';
 
+
 function App() {
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -15,6 +16,19 @@ function App() {
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const [user, setUser] = useState<any>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
+  // --- Move showNotification and handleAuthRequired above loadWardrobe ---
+  const showNotification = React.useCallback((message: string, type: 'info' | 'success' | 'error' = 'info'): void => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  }, []);
+
+  const handleAuthRequired = React.useCallback((): void => {
+    showNotification('Please sign in to continue', 'info');
+    setShowLogin(true);
+  }, [showNotification]);
+
+
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -56,17 +70,7 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Load wardrobe when user is available
-  useEffect(() => {
-    if (user) {
-      loadWardrobe();
-    } else {
-      setLoading(false);
-      setWardrobeItems([]);
-    }
-  }, [user]);
-
-  const loadWardrobe = async (): Promise<void> => {
+  const loadWardrobe = React.useCallback(async (): Promise<void> => {
     try {
       const result = await wardrobeAPI.getAll();
       if (result.success) {
@@ -82,12 +86,19 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleAuthRequired, showNotification]);
 
-  const handleAuthRequired = (): void => {
-    showNotification('Please sign in to continue', 'info');
-    setShowLogin(true);
-  };
+  // Load wardrobe when user is available
+  useEffect(() => {
+    if (user) {
+      loadWardrobe();
+    } else {
+      setLoading(false);
+      setWardrobeItems([]);
+    }
+  }, [user, loadWardrobe]);
+
+
 
   const handleAnalysisComplete = (): void => {
     showNotification('Item added to wardrobe! ✨', 'success');
@@ -129,10 +140,7 @@ function App() {
     }
   };
 
-  const showNotification = (message: string, type: 'info' | 'success' | 'error' = 'info'): void => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  };
+
 
   const handleLoginSuccess = (userData: any) => {
     setUser(userData);

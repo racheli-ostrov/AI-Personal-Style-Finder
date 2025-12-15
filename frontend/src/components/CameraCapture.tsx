@@ -11,14 +11,8 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [captured, setCaptured] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    startCamera();
-    return () => {
-      stopCamera();
-    };
-  }, []);
 
-  const startCamera = async () => {
+  const startCamera = React.useCallback(async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
@@ -36,13 +30,20 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
       alert('Could not access camera. Please check your permissions.');
       onClose();
     }
-  };
+  }, [onClose, videoRef]);
 
-  const stopCamera = () => {
+  const stopCamera = React.useCallback(() => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
     }
-  };
+  }, [stream]);
+
+  React.useEffect(() => {
+    startCamera();
+    return () => {
+      stopCamera();
+    };
+  }, [startCamera, stopCamera]);
 
   const capturePhoto = useCallback(() => {
     if (videoRef.current) {
@@ -56,7 +57,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
         setCaptured(imageData);
       }
     }
-  }, []);
+  }, [videoRef]);
 
   const handleUsePhoto = useCallback(() => {
     if (captured) {
@@ -70,7 +71,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
           onClose();
         });
     }
-  }, [captured, onCapture, onClose]);
+  }, [captured, onCapture, onClose, stopCamera]);
 
   const handleRetake = useCallback(() => {
     setCaptured(null);
@@ -79,7 +80,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
   const handleClose = useCallback(() => {
     stopCamera();
     onClose();
-  }, [onClose]);
+  }, [stopCamera, onClose]);
 
   return (
     <div className="camera-modal">

@@ -13,17 +13,12 @@ const ShoppingRecommendations: React.FC<ShoppingRecommendationsProps> = ({ analy
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
-  React.useEffect(() => {
-    loadRecommendations();
-  }, []);
 
-  const loadRecommendations = async () => {
+  const loadRecommendations = React.useCallback(async () => {
     setLoading(true);
     setError('');
-    
     try {
       const response = await getShoppingRecommendations(analysis);
-      
       if (response.success) {
         setRecommendations(response.recommendations);
         setSearchQuery(response.search_query);
@@ -35,7 +30,11 @@ const ShoppingRecommendations: React.FC<ShoppingRecommendationsProps> = ({ analy
     } finally {
       setLoading(false);
     }
-  };
+  }, [analysis]);
+
+  React.useEffect(() => {
+    loadRecommendations();
+  }, [loadRecommendations]);
 
   return (
     <div className="shopping-modal-overlay" onClick={onClose}>

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { useDropzone, FileRejection, DropzoneOptions } from 'react-dropzone';
-import { styleAPI, wardrobeAPI } from '../services/api';
+import { useDropzone, DropzoneOptions } from 'react-dropzone';
+import { styleAPI } from '../services/api';
 import CameraCapture from './CameraCapture';
 import './ImageUpload.css';
 
@@ -35,8 +35,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete, onAuthReq
 
     try {
       // Wait for image to load and get the data
-      const imageData = await imageDataPromise;
-      
+      await imageDataPromise;
       // Analyze image with Gemini AI - this will automatically add to wardrobe
       const result = await styleAPI.analyzeImage(file);
       
@@ -44,7 +43,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete, onAuthReq
         if (onAnalysisComplete) {
           onAnalysisComplete(result.data.analysis);
         }
-        
         // Clear preview after success
         setTimeout(() => {
           setPreview(null);
@@ -63,7 +61,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete, onAuthReq
     } finally {
       setUploading(false);
     }
-  }, [onAnalysisComplete]);
+  }, [onAnalysisComplete, onAuthRequired]);
 
   const dropzoneOptions: DropzoneOptions = {
     onDrop,

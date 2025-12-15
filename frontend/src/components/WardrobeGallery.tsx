@@ -46,13 +46,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
     return Array.from(colors).sort();
   }, [items]);
 
-  const uniqueOccasions = useMemo(() => {
-    const occasions = new Set<string>();
-    items.forEach(item => {
-      item.analysis.occasions?.forEach(occ => occasions.add(occ.toLowerCase()));
-    });
-    return Array.from(occasions).sort();
-  }, [items]);
+  // Removed unused variable uniqueOccasions
 
   // Extract unique seasons
   const uniqueSeasons = useMemo(() => {
