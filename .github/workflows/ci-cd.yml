@@ -51,7 +51,7 @@ jobs:
       run: docker save style-finder-backend:${{ github.sha }} | gzip > backend-image.tar.gz
     
     - name: Upload Docker image artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: backend-image
         path: backend/backend-image.tar.gz
@@ -104,7 +104,7 @@ jobs:
       run: docker save style-finder-frontend:${{ github.sha }} | gzip > frontend-image.tar.gz
     
     - name: Upload Docker image artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-image
         path: frontend/frontend-image.tar.gz
