@@ -1,3 +1,19 @@
+.main-title-gray {
+  color: #4B5563 !important;
+  fill: #4B5563 !important;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 8px;
+  vertical-align: middle;
+  border: 2px solid #667eea;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
 * {
   box-sizing: border-box;
   font-family: 'Calibri Light', 'Calibri', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
@@ -31,15 +47,20 @@ button, input, textarea, select {
 
 .app-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: rgb(255, 255, 255);
   padding: 50px 30px;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -64,21 +85,17 @@ button, input, textarea, select {
 
 .header-content {
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
   position: relative;
   z-index: 1;
 }
 
 .header-content h1 {
-  margin: 0 0 16px 0;
-  font-size: 48px;
+  margin: 0 0 8px 0;
+  font-size: 42px;
   font-weight: 800;
-  letter-spacing: -1.5px;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(to right, #ffffff 0%, #f0f9ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   animation: fadeInDown 0.8s ease-out;
   transition: all 0.3s ease;
 }
@@ -94,22 +111,17 @@ button, input, textarea, select {
 }
 
 @keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .header-actions {
-  min-width: 150px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   position: relative;
   z-index: 1;
+  margin-left: auto;
 }
 
 .login-btn-header {
@@ -128,7 +140,11 @@ button, input, textarea, select {
 .app-header.scrolled .login-btn-header {
   padding: 8px 20px;
   font-size: 0.9rem;
-  border-radius: 10px;
+}
+
+.app-header.scrolled .user-avatar {
+  width: 32px;
+  height: 32px;
 }
 
 .login-btn-header:hover {
@@ -137,6 +153,7 @@ button, input, textarea, select {
   background: white;
 }
 
+/* USER MENU - עם יישור לימין */
 .user-menu {
   display: flex;
   flex-direction: column;
@@ -149,12 +166,8 @@ button, input, textarea, select {
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
   cursor: default;
-}
-
-.app-header.scrolled .user-menu {
-  padding: 10px 16px;
-  gap: 6px;
-  border-radius: 12px;
+  min-width: 140px;
+  box-sizing: border-box;
 }
 
 .user-menu:hover {
@@ -164,17 +177,20 @@ button, input, textarea, select {
   transform: translateY(-2px);
 }
 
+.user-profile-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
 .user-name {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-align: center;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   letter-spacing: 0.3px;
   transition: all 0.3s;
-}
-
-.app-header.scrolled .user-name {
-  font-size: 0.95rem;
 }
 
 .user-menu:hover .user-name {
@@ -185,26 +201,19 @@ button, input, textarea, select {
   background: rgba(255, 255, 255, 0.9);
   color: #667eea;
   border: none;
-  padding: 10px 24px;
+  padding: 8px 20px;
   border-radius: 10px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.app-header.scrolled .logout-btn {
-  padding: 6px 16px;
-  font-size: 0.85rem;
-  border-radius: 8px;
-}
-
 .logout-btn:hover {
   background: white;
   color: #764ba2;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .subtitle {
@@ -214,18 +223,12 @@ button, input, textarea, select {
   font-weight: 400;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   animation: fadeInUp 0.8s ease-out 0.2s both;
-  transition: all 0.3s ease;
+  color: white;
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 0.95;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 0.95; transform: translateY(0); }
 }
 
 .app-main {
@@ -271,19 +274,34 @@ button, input, textarea, select {
 }
 
 @keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  from { transform: translateX(400px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .notification.success {
   background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
   color: white;
+}
+
+.notification-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  background: rgba(255,255,255,0.3);
+  overflow: hidden;
+}
+.notification-progress-bar {
+  height: 100%;
+  background: #fff;
+  width: 100%;
+  animation: notificationProgressBar 3s linear forwards;
+}
+
+@keyframes notificationProgressBar {
+  from { width: 100%; }
+  to { width: 0%; }
 }
 
 .notification.error {
@@ -299,19 +317,10 @@ button, input, textarea, select {
 .loading-screen {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  gap: 20px;
-}
-
-.spinner-large {
-  border: 6px solid #e5e7eb;
-  border-radius: 50%;
-  border-top: 6px solid #667eea;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
+  background: linear-gradient(to bottom, #f0f9ff 0%, #ffffff 100%);
 }
 
 @keyframes spin {
@@ -339,6 +348,18 @@ button, input, textarea, select {
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    padding: 30px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
   .header-content h1 {
     font-size: 32px;
   }

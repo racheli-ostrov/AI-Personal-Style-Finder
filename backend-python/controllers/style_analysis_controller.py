@@ -97,20 +97,33 @@ class StyleAnalysisController:
         POST /api/style/profile
         Generate style profile from wardrobe
         """
+        print('--- [DEBUG] generate_profile endpoint called ---')
         try:
-            result = style_analysis_service.generate_style_profile()
-            
+            data = request.get_json()
+            print(f'[DEBUG] Request data: {data}')
+            user_id = data.get('userId') if data else None
+            if not user_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'User ID is required'
+                }), 401
+            print(f'[DEBUG] user_id: {user_id}')
+            result = style_analysis_service.generate_style_profile(user_id)
+            print(f'[DEBUG] Profile result: {result}')
             return jsonify({
                 'success': True,
                 'data': result
             }), 200
-            
         except ValueError as e:
+            import traceback
+            traceback.print_exc()
             return jsonify({
                 'success': False,
                 'error': str(e)
             }), 400
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             print(f'Error in generateProfile controller: {str(e)}')
             return jsonify({
                 'success': False,

@@ -19,6 +19,10 @@
 .profile-header h2 {
   margin: 0;
   font-size: 28px;
+.generate-btn {
+  justify-content: center;
+  position: relative;
+}
   font-weight: 700;
 }
 
@@ -39,6 +43,16 @@
 
 .generate-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+.spinner-small {
+  display: block;
+  margin: 0 auto;
+  width: 32px;
+  height: 32px;
+  border: 5px solid rgba(102, 126, 234, 0.3);
+  border-radius: 50%;
+  border-top-color: #667eea;
+  animation: spin 0.8s linear infinite;
+}
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 

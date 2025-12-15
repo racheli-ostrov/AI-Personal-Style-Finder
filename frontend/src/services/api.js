@@ -46,8 +46,8 @@ export const styleAPI = {
   },
 
   // Generate style profile from wardrobe
-  generateProfile: async (wardrobeItems) => {
-    const userId = requireAuth();
+  generateProfile: async (wardrobeItems, userId) => {
+    if (!userId) throw new Error('User ID required');
     const response = await api.post('/style/profile', { wardrobeItems, userId });
     return response.data;
   },

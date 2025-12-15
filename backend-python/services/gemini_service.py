@@ -65,19 +65,24 @@ class GeminiService:
             Dict containing analysis results
         """
         try:
-            # Prepare the prompt
-            prompt = """Analyze this clothing item and provide a JSON response with the following structure:
+                        # Prepare the prompt
+            prompt = """
+Analyze this clothing item and provide a JSON response with the following structure:
 {
-  "type": "shirt/pants/dress/shoes/accessory/jacket/skirt/etc",
-  "colors": ["primary color", "secondary color"],
-  "pattern": "solid/striped/floral/checkered/etc",
-  "style": "casual/formal/sporty/elegant/etc",
-  "fabric": "cotton/denim/leather/silk/etc",
-  "season": "summer/winter/spring/fall/all-season",
-  "occasion": "daily/work/party/sport/etc"
+    "type": "shirt/pants/dress/shoes/accessory/jacket/skirt/etc (REQUIRED, one word only)",
+    "colors": ["primary color", "secondary color"],
+    "pattern": "solid/striped/floral/checkered/etc",
+    "style": "casual/formal/sporty/elegant/etc",
+    "fabric": "cotton/denim/leather/silk/etc",
+    "season": "summer/winter/spring/fall/all-season",
+    "occasion": "daily/work/party/sport/etc"
 }
 
-Provide accurate and specific information based on what you see in the image."""
+IMPORTANT: The "type" field is REQUIRED and must be a single word describing the clothing item (e.g., "shirt", "pants", "skirt", "dress", etc). Do NOT leave it empty. If you are unsure, make your best guess.
+
+Provide accurate and specific information based on what you see in the image.
+"""
+
 
             # Convert image to base64
             image_base64 = base64.b64encode(image_data).decode('utf-8')
@@ -148,6 +153,11 @@ Provide accurate and specific information based on what you see in the image."""
                 result_text = result_text[:-3]
             
             result = json.loads(result_text.strip())
+            # Ensure 'type' is present and mapped to 'clothing_type' for consistency
+            if 'type' in result:
+                result['clothing_type'] = result['type']
+            elif 'clothing_type' not in result:
+                raise ValueError('Gemini response missing required "type" field')
             return result
             
         except json.JSONDecodeError as e:

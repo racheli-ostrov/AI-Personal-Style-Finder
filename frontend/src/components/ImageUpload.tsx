@@ -127,7 +127,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onAnalysisComplete, onAuthReq
               <p className="upload-text">
                 {isDragActive 
                   ? 'Drop your image here...' 
-                  : 'Drag & drop image'}
+                  : 'Drag or drop image'}
               </p>
               <p className="upload-hint">or click to select</p>
               <p className="upload-formats">JPG, PNG, WEBP</p>

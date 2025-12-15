@@ -15,6 +15,8 @@ services:
       - FRONTEND_URL=http://localhost:3000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: unless-stopped
+    volumes:
+      - wardrobe_db:/app/db
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
       interval: 30s
@@ -31,7 +33,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_URL=http://localhost:5000/api
+      - REACT_APP_API_URL=http://backend:5000/api
     depends_on:
       - backend
     restart: unless-stopped
@@ -43,6 +45,8 @@ services:
       start_period: 40s
 
 volumes:
+  wardrobe_db:
+    driver: local
   uploads:
     driver: local
 

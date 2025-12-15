@@ -2,151 +2,127 @@
 Wardrobe Service
 Business logic for managing wardrobe items
 """
+
+# --- SQLite-based implementation ---
+import sqlite3
+import os
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
+DB_PATH = os.path.join(os.path.dirname(__file__), 'db', 'wardrobe.sqlite3')
+
+def get_db():
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS wardrobe (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            image_info TEXT,
+            image_data TEXT,
+            analysis TEXT,
+            added_at TEXT,
+            favorite INTEGER DEFAULT 0
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
 class WardrobeService:
-    """Service for managing wardrobe items"""
-    
-    def __init__(self):
-        """Initialize wardrobe service with in-memory storage per user"""
-        # Dictionary to store wardrobes per user: {userId: {items: [], counter: int}}
-        self.wardrobes: Dict[str, Dict] = {}
-    
-    def _get_user_wardrobe(self, user_id: str) -> Dict:
-        """Get or create wardrobe for specific user"""
-        if user_id not in self.wardrobes:
-            self.wardrobes[user_id] = {
-                'items': [],
-                'counter': 1
-            }
-        return self.wardrobes[user_id]
-    
     def get_all_items(self, user_id: str) -> List[Dict]:
-        """Get all wardrobe items for specific user"""
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        return user_wardrobe['items'].copy()
-    
-    def get_item_by_id(self, user_id: str, item_id: int) -> Optional[Dict]:
-        """Get a specific item by ID for specific user"""
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        for item in user_wardrobe['items']:
-            if item['id'] == item_id:
-                return item.copy()
-        return None
-    
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT * FROM wardrobe WHERE user_id=?', (user_id,))
+        rows = c.fetchall()
+        items = []
+        for row in rows:
+            items.append({
+                'id': row['id'],
+                'userId': row['user_id'],
+                'imageInfo': eval(row['image_info']) if row['image_info'] else {},
+                'imageData': row['image_data'],
+                'analysis': eval(row['analysis']) if row['analysis'] else {},
+                'addedAt': row['added_at'],
+                'favorite': bool(row['favorite'])
+            })
+        conn.close()
+        return items
+
     def add_item(self, user_id: str, image_info: Dict, analysis: Dict) -> Dict:
-        """
-        Add a new item to the wardrobe for specific user
-        
-        Args:
-            user_id: User identifier
-            image_info: Image metadata (filename, size, mimetype, data)
-            analysis: AI analysis results
-            
-        Returns:
-            The newly created item
-        """
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        
-        # Extract imageData from image_info if it exists
+        conn = get_db()
+        c = conn.cursor()
         image_data = image_info.get('data', '')
-        
-        new_item = {
-            'id': user_wardrobe['counter'],
-            'imageInfo': image_info,
-            'imageData': image_data,  # Store the actual image data
-            'analysis': analysis,
-            'addedAt': datetime.now().isoformat(),
-            'favorite': False
-        }
-        
-        user_wardrobe['counter'] += 1
-        user_wardrobe['items'].append(new_item)
-        
-        return new_item.copy()
-    
-    def delete_item(self, user_id: str, item_id: int) -> bool:
-        """
-        Delete an item from the wardrobe for specific user
-        
-        Args:
-            user_id: User identifier
-            item_id: ID of item to delete
-            
-        Returns:
-            True if deleted, False if not found
-        """
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        for i, item in enumerate(user_wardrobe['items']):
-            if item['id'] == item_id:
-                user_wardrobe['items'].pop(i)
-                return True
-        return False
-    
-    def toggle_favorite(self, user_id: str, item_id: int) -> Optional[Dict]:
-        """
-        Toggle favorite status of an item for specific user
-        
-        Args:
-            user_id: User identifier
-            item_id: ID of item to toggle
-            
-        Returns:
-            Updated item or None if not found
-        """
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        for item in user_wardrobe['items']:
-            if item['id'] == item_id:
-                item['favorite'] = not item['favorite']
-                return item.copy()
-        return None
-    
-    def clear_wardrobe(self, user_id: str) -> None:
-        """Clear all items from wardrobe for specific user"""
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        user_wardrobe['items'].clear()
-        user_wardrobe['counter'] = 1
-    
-    def get_statistics(self, user_id: str) -> Dict[str, Any]:
-        """
-        Calculate wardrobe statistics for specific user
-        
-        Args:
-            user_id: User identifier
-            
-        Returns:
-            Dict containing statistics
-        """
-        user_wardrobe = self._get_user_wardrobe(user_id)
-        items = user_wardrobe['items']
-        
-        total_items = len(items)
-        favorite_items = sum(1 for item in items if item.get('favorite', False))
-        
-        # Count item types
-        item_types: Dict[str, int] = {}
-        for item in items:
-            item_type = item.get('analysis', {}).get('type', 'unknown')
-            item_types[item_type] = item_types.get(item_type, 0) + 1
-        
-        # Count dominant colors
-        color_counts: Dict[str, int] = {}
-        for item in items:
-            colors = item.get('analysis', {}).get('colors', [])
-            for color in colors:
-                color_counts[color] = color_counts.get(color, 0) + 1
-        
-        # Get top 5 colors
-        dominant_colors = sorted(color_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-        dominant_colors = [color for color, _ in dominant_colors]
-        
+        c.execute('''
+            INSERT INTO wardrobe (user_id, image_info, image_data, analysis, added_at, favorite)
+            VALUES (?, ?, ?, ?, ?, 0)
+        ''', (user_id, str(image_info), image_data, str(analysis), datetime.now().isoformat()))
+        item_id = c.lastrowid
+        conn.commit()
+        conn.close()
+        return self.get_item_by_id(user_id, item_id)
+
+    def get_item_by_id(self, user_id: str, item_id: int) -> Optional[Dict]:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT * FROM wardrobe WHERE user_id=? AND id=?', (user_id, item_id))
+        row = c.fetchone()
+        conn.close()
+        if not row:
+            return None
         return {
-            'totalItems': total_items,
-            'favoriteItems': favorite_items,
-            'itemTypes': item_types,
-            'dominantColors': dominant_colors
+            'id': row['id'],
+            'userId': row['user_id'],
+            'imageInfo': eval(row['image_info']) if row['image_info'] else {},
+            'imageData': row['image_data'],
+            'analysis': eval(row['analysis']) if row['analysis'] else {},
+            'addedAt': row['added_at'],
+            'favorite': bool(row['favorite'])
         }
 
-# Create singleton instance
+    def delete_item(self, user_id: str, item_id: int) -> bool:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('DELETE FROM wardrobe WHERE user_id=? AND id=?', (user_id, item_id))
+        deleted = c.rowcount > 0
+        conn.commit()
+        conn.close()
+        return deleted
+
+    def toggle_favorite(self, user_id: str, item_id: int) -> Optional[Dict]:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT favorite FROM wardrobe WHERE user_id=? AND id=?', (user_id, item_id))
+        row = c.fetchone()
+        if not row:
+            conn.close()
+            return None
+        new_fav = 0 if row['favorite'] else 1
+        c.execute('UPDATE wardrobe SET favorite=? WHERE user_id=? AND id=?', (new_fav, user_id, item_id))
+        conn.commit()
+        conn.close()
+        return self.get_item_by_id(user_id, item_id)
+
+    def clear_wardrobe(self, user_id: str) -> None:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('DELETE FROM wardrobe WHERE user_id=?', (user_id,))
+        conn.commit()
+        conn.close()
+
+    def get_statistics(self, user_id: str) -> Dict[str, Any]:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT COUNT(*) as count FROM wardrobe WHERE user_id=?', (user_id,))
+        count = c.fetchone()['count']
+        conn.close()
+        return {'totalItems': count}
+
 wardrobe_service = WardrobeService()

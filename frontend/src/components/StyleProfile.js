@@ -17,11 +17,16 @@ const StyleProfile = ({ wardrobeItems }) => {
     setError(null);
 
     try {
-      const items = wardrobeItems.map(item => item.analysis);
-      const result = await styleAPI.generateProfile(items);
-      
-      if (result.success) {
-        setProfile(result.data);
+      const user = localStorage.getItem('user');
+      const userId = user ? JSON.parse(user).id : null;
+      if (!userId) {
+        setError('User ID not found. Please log in again.');
+        setLoading(false);
+        return;
+      }
+      const result = await styleAPI.generateProfile(wardrobeItems, userId);
+      if (result.success && result.data && result.data.profile) {
+        setProfile(result.data.profile);
       }
     } catch (err) {
       console.error('Profile generation error:', err);
@@ -78,51 +83,36 @@ const StyleProfile = ({ wardrobeItems }) => {
           </div>
 
           <div className="profile-section">
-            <h3>👔 Preferred Formality</h3>
-            <p className="formality-badge">{profile.preferredFormality}</p>
+            <h3>💫 Style Personality</h3>
+            <p className="persona-text">{profile.stylePersonality}</p>
           </div>
 
-          <div className="profile-section">
-            <h3>💫 Style Persona</h3>
-            <p className="persona-text">{profile.stylePersona}</p>
-          </div>
-
-          {profile.recommendations && (
+          {profile.recommendations && profile.recommendations.length > 0 && (
             <div className="profile-section recommendations">
               <h3>📊 Recommendations</h3>
-              
-              {profile.recommendations.strengths?.length > 0 && (
-                <div className="rec-subsection">
-                  <h4>✅ Strengths</h4>
-                  <ul>
-                    {profile.recommendations.strengths.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <ul>
+                {profile.recommendations.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              {profile.recommendations.gaps?.length > 0 && (
-                <div className="rec-subsection">
-                  <h4>🔍 Gaps to Fill</h4>
-                  <ul>
-                    {profile.recommendations.gaps.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {profile.missingPieces && profile.missingPieces.length > 0 && (
+            <div className="profile-section missing-pieces">
+              <h3>🧩 Missing Pieces</h3>
+              <ul>
+                {profile.missingPieces.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              {profile.recommendations.suggestions?.length > 0 && (
-                <div className="rec-subsection">
-                  <h4>💡 Suggestions</h4>
-                  <ul>
-                    {profile.recommendations.suggestions.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {profile.statistics && (
+            <div className="profile-section statistics">
+              <h3>📦 Wardrobe Statistics</h3>
+              <p>Total items: {profile.statistics.totalItems || profile.itemCount}</p>
             </div>
           )}
 

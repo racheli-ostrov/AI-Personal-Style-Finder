@@ -38,7 +38,8 @@ class StyleAnalysisService:
         except Exception as e:
             raise ValueError(f'Failed to analyze image: {str(e)}')
     
-    def generate_style_profile(self) -> Dict[str, Any]:
+    def generate_style_profile(self, user_id: str) -> Dict[str, Any]:
+        print(f'[DEBUG] style_analysis_service.generate_style_profile called for user_id={user_id}')
         """
         Generate a comprehensive style profile based on wardrobe
         
@@ -46,26 +47,28 @@ class StyleAnalysisService:
             Dict containing style profile and statistics
         """
         try:
-            # Get all wardrobe items
-            wardrobe_items = wardrobe_service.get_all_items()
-            
+            # Get all wardrobe items for user
+            wardrobe_items = wardrobe_service.get_all_items(user_id)
+            print(f'[DEBUG] wardrobe_items (user_id={user_id}): {wardrobe_items}')
+
             # Require minimum items for profile
             if len(wardrobe_items) < 3:
                 raise ValueError('Need at least 3 items in wardrobe to generate profile')
-            
+
             # Generate profile using AI
             profile = gemini_service.generate_style_profile(wardrobe_items)
-            
+            print(f'[DEBUG] AI profile: {profile}')
+
             # Add statistics
-            stats = wardrobe_service.get_statistics()
-            
+            stats = wardrobe_service.get_statistics(user_id)
+
             result = {
                 'profile': profile,
                 'statistics': stats,
                 'itemCount': len(wardrobe_items),
                 'generatedAt': datetime.now().isoformat()
             }
-            
+
             return result
             
         except Exception as e:

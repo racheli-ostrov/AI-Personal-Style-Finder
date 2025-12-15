@@ -161,13 +161,19 @@ function App() {
     <div className="App">
       <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-content">
-          <h1>✨ AI Personal Style Finder</h1>
+          <h1><span className="main-title-gray">✨ AI Personal Style Finder</span></h1>
           <p className="subtitle">Discover your unique style with AI-powered fashion analysis</p>
         </div>
         <div className="header-actions">
           {user ? (
             <div className="user-menu">
-              <span className="user-name">👤 {user.name}</span>
+              <div className="user-profile-row">
+               
+                <span className="user-name"> {user.name }</span>
+                 {user.picture && (
+                  <img src={user.picture} alt="profile" className="user-avatar" />
+                )}
+              </div>
               <button className="logout-btn" onClick={handleLogout}>Logout</button>
             </div>
           ) : (
@@ -185,6 +191,9 @@ function App() {
       {notification && (
         <div className={`notification ${notification.type}`}>
           {notification.message}
+          <div className="notification-progress">
+            <div className="notification-progress-bar"></div>
+          </div>
         </div>
       )}
 

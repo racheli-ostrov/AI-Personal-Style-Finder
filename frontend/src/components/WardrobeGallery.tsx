@@ -21,7 +21,13 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
   const [filterType, setFilterType] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
   const [filterOccasion, setFilterOccasion] = useState<string>('all');
+  const [filterSeason, setFilterSeason] = useState<string>('all');
 
+  // Debug: Print all items to console to help diagnose filter issues
+  console.log('Wardrobe items:', items);
+  items.forEach((item, idx) => {
+    console.log(`Item #${idx + 1}:`, item.analysis);
+  });
   // Extract unique values for filters
   const uniqueTypes = useMemo(() => {
     const types = new Set<string>();
@@ -46,6 +52,16 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
       item.analysis.occasions?.forEach(occ => occasions.add(occ.toLowerCase()));
     });
     return Array.from(occasions).sort();
+  }, [items]);
+
+  // Extract unique seasons
+  const uniqueSeasons = useMemo(() => {
+    const seasons = new Set<string>();
+    items.forEach(item => {
+      const season = item.analysis.season?.toLowerCase();
+      if (season) seasons.add(season);
+    });
+    return Array.from(seasons).sort();
   }, [items]);
 
   // Filter items based on selected filters
@@ -82,9 +98,17 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
         }
       }
 
+      // Season filter
+      if (filterSeason !== 'all') {
+        const season = item.analysis.season?.toLowerCase() || '';
+        if (season !== filterSeason.toLowerCase()) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [items, showFavoritesOnly, filterType, filterColor, filterOccasion]);
+  }, [items, showFavoritesOnly, filterType, filterColor, filterOccasion, filterSeason]);
 
   if (items.length === 0) {
     return (
@@ -134,17 +158,17 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
           </select>
 
           <select 
-            value={filterOccasion} 
-            onChange={(e) => setFilterOccasion(e.target.value)}
+            value={filterSeason} 
+            onChange={(e) => setFilterSeason(e.target.value)}
             className="filter-select"
           >
-            <option value="all">All Occasions</option>
-            {uniqueOccasions.map(occ => (
-              <option key={occ} value={occ}>{occ}</option>
+            <option value="all">All Seasons</option>
+            {uniqueSeasons.map(season => (
+              <option key={season} value={season}>{season}</option>
             ))}
           </select>
 
-          {(showFavoritesOnly || filterType !== 'all' || filterColor !== 'all' || filterOccasion !== 'all') && (
+          {(showFavoritesOnly || filterType !== 'all' || filterColor !== 'all' || filterOccasion !== 'all' || filterSeason !== 'all') && (
             <button 
               className="clear-filters-btn"
               onClick={() => {
@@ -152,6 +176,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
                 setFilterType('all');
                 setFilterColor('all');
                 setFilterOccasion('all');
+                setFilterSeason('all');
               }}
             >
               ✕ Clear Filters

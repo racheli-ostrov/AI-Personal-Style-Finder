@@ -5,3 +5,6 @@ build/
 coverage/
 *.log
 .DS_Store
+backend-python/.env
+frontend/.env
+*.env
