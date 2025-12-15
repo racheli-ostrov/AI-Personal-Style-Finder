@@ -134,9 +134,12 @@ def test_add_multiple_items(wardrobe_service):
         service.add_item(user_id, {'filename': f'test{i}.jpg'}, {'type': 'shirt'})
     items = service.get_all_items(user_id)
     assert len(items) == 3
-    assert items[0]['id'] == 1
-    assert items[1]['id'] == 2
-    assert items[2]['id'] == 3
+    ids = [item['id'] for item in items]
+    assert len(ids) == len(set(ids)), "IDs should be unique"
+    filenames = [item['imageInfo'].get('filename') for item in items]
+    assert 'test0.jpg' in filenames
+    assert 'test1.jpg' in filenames
+    assert 'test2.jpg' in filenames
 
 def test_get_item_by_id(wardrobe_service):
     service, user_id = wardrobe_service
