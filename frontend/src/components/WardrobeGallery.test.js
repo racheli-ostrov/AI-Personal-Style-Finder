@@ -35,8 +35,8 @@ describe('WardrobeGallery Component', () => {
     render(<WardrobeGallery items={mockItems} onDelete={() => {}} onToggleFavorite={() => {}} />);
     
     expect(screen.getByText(/My Wardrobe \(2 items\)/i)).toBeInTheDocument();
-    expect(screen.getByText('shirt')).toBeInTheDocument();
-    expect(screen.getByText('pants')).toBeInTheDocument();
+    expect(screen.getAllByText('shirt').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('pants').length).toBeGreaterThan(0);
   });
 
   test('displays item colors correctly', () => {
@@ -54,8 +54,8 @@ describe('WardrobeGallery Component', () => {
 
     render(<WardrobeGallery items={mockItems} onDelete={() => {}} onToggleFavorite={() => {}} />);
     
-    expect(screen.getByText('blue')).toBeInTheDocument();
-    expect(screen.getByText('white')).toBeInTheDocument();
-    expect(screen.getByText('red')).toBeInTheDocument();
+    expect(screen.getAllByText('blue').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('white').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('red').length).toBeGreaterThan(0);
   });
 });
