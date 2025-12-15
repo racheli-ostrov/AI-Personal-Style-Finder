@@ -356,10 +356,10 @@ jobs:
         timeout 180 bash -c 'until docker compose ps | grep -q "healthy"; do sleep 2; done'
     
     - name: Check backend health
-      run: curl -f http://localhost:5000/api/health || exit 1
+      run: curl -f http://localhost:3000/api/health || exit 1
     
     - name: Check frontend availability
-      run: curl -f http://localhost:3000 || exit 1
+      run: curl -f http://localhost:5000 || exit 1
     
     - name: Show logs on failure
       if: failure()
