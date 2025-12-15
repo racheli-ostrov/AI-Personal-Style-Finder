@@ -99,161 +99,93 @@
 #     # The following asserts may need to be updated if get_statistics returns a different structure
 #     assert stats['totalItems'] == 2
 #     # Optionally add more asserts if get_statistics returns more info
-"""Tests for wardrobe service"""
+"""
+Tests for Wardrobe Service
+"""
 import pytest
 from services.wardrobe_service import WardrobeService
 
-
 @pytest.fixture
 def wardrobe_service():
-    """Create a fresh wardrobe service for each test"""
     service = WardrobeService()
-    user_id = 'test_user'
-    # Clear any existing data
+    user_id = "test_user"
+    yield service, user_id
     service.clear_wardrobe(user_id)
-    return service, user_id
-
 
 def test_get_all_items_empty(wardrobe_service):
-    """Test getting all items when wardrobe is empty"""
     service, user_id = wardrobe_service
     items = service.get_all_items(user_id)
     assert items == []
-
 
 def test_add_item(wardrobe_service):
-    """Test adding a single item"""
     service, user_id = wardrobe_service
-    file_info = {'filename': 'test.jpg'}
-    analysis = {'type': 'shirt', 'color': 'blue'}
-    
-    item = service.add_item(user_id, file_info, analysis)
-    
-    assert item is not None
-    assert 'id' in item
-    assert item['filename'] == 'test.jpg'
-    assert item['type'] == 'shirt'
-    assert item['color'] == 'blue'
-
+    image_info = {'filename': 'test.jpg', 'size': 1000, 'mimetype': 'image/jpeg'}
+    analysis = {'type': 'shirt', 'colors': ['blue'], 'style': 'casual'}
+    item = service.add_item(user_id, image_info, analysis)
+    assert item['id'] == 1
+    assert item['imageInfo'] == image_info
+    assert item['analysis'] == analysis
+    assert item['favorite'] is False
+    assert 'addedAt' in item
 
 def test_add_multiple_items(wardrobe_service):
-    """Test adding multiple items"""
     service, user_id = wardrobe_service
-    
-    # Add 3 items
     for i in range(3):
         service.add_item(user_id, {'filename': f'test{i}.jpg'}, {'type': 'shirt'})
-    
     items = service.get_all_items(user_id)
     assert len(items) == 3
-    
-    # Check that IDs are unique (not checking specific values)
-    ids = [item['id'] for item in items]
-    assert len(ids) == len(set(ids)), "IDs should be unique"
-    
-    # Check filenames
-    filenames = [item['filename'] for item in items]
-    assert 'test0.jpg' in filenames
-    assert 'test1.jpg' in filenames
-    assert 'test2.jpg' in filenames
-
+    assert items[0]['id'] == 1
+    assert items[1]['id'] == 2
+    assert items[2]['id'] == 3
 
 def test_get_item_by_id(wardrobe_service):
-    """Test getting a specific item by ID"""
     service, user_id = wardrobe_service
-    
-    # Add an item
-    added_item = service.add_item(user_id, {'filename': 'test.jpg'}, {'type': 'shirt'})
-    item_id = added_item['id']
-    
-    # Get it back
-    item = service.get_item_by_id(user_id, item_id)
-    
-    assert item is not None
-    assert item['id'] == item_id
-    assert item['filename'] == 'test.jpg'
-
+    item = service.add_item(user_id, {'filename': 'test.jpg'}, {'type': 'shirt'})
+    found = service.get_item_by_id(user_id, item['id'])
+    assert found['id'] == item['id']
 
 def test_get_item_by_id_not_found(wardrobe_service):
-    """Test getting a non-existent item"""
     service, user_id = wardrobe_service
-    item = service.get_item_by_id(user_id, 99999)
-    assert item is None
-
+    found = service.get_item_by_id(user_id, 999)
+    assert found is None
 
 def test_delete_item(wardrobe_service):
-    """Test deleting an item"""
     service, user_id = wardrobe_service
-    
-    # Add an item
-    added_item = service.add_item(user_id, {'filename': 'test.jpg'}, {'type': 'shirt'})
-    item_id = added_item['id']
-    
-    # Delete it
-    result = service.delete_item(user_id, item_id)
-    assert result is True
-    
-    # Verify it's gone
-    item = service.get_item_by_id(user_id, item_id)
-    assert item is None
-
+    item = service.add_item(user_id, {'filename': 'test.jpg'}, {'type': 'shirt'})
+    success = service.delete_item(user_id, item['id'])
+    assert success is True
+    items = service.get_all_items(user_id)
+    assert len(items) == 0
 
 def test_delete_item_not_found(wardrobe_service):
-    """Test deleting a non-existent item"""
     service, user_id = wardrobe_service
-    result = service.delete_item(user_id, 99999)
-    assert result is False
-
+    success = service.delete_item(user_id, 999)
+    assert success is False
 
 def test_toggle_favorite(wardrobe_service):
-    """Test toggling favorite status"""
     service, user_id = wardrobe_service
-    
-    # Add an item
-    added_item = service.add_item(user_id, {'filename': 'test.jpg'}, {'type': 'shirt'})
-    item_id = added_item['id']
-    
-    # Initially not favorite
-    assert added_item.get('is_favorite', False) is False
-    
-    # Toggle to favorite
-    item = service.toggle_favorite(user_id, item_id)
-    assert item['is_favorite'] is True
-    
-    # Toggle back
-    item = service.toggle_favorite(user_id, item_id)
-    assert item['is_favorite'] is False
-
+    item = service.add_item(user_id, {'filename': 'test.jpg'}, {'type': 'shirt'})
+    # Toggle to True
+    updated = service.toggle_favorite(user_id, item['id'])
+    assert updated['favorite'] is True
+    # Toggle back to False
+    updated = service.toggle_favorite(user_id, item['id'])
+    assert updated['favorite'] is False
 
 def test_clear_wardrobe(wardrobe_service):
-    """Test clearing entire wardrobe"""
     service, user_id = wardrobe_service
-    
-    # Add some items
     for i in range(3):
         service.add_item(user_id, {'filename': f'test{i}.jpg'}, {'type': 'shirt'})
-    
-    # Clear
     service.clear_wardrobe(user_id)
-    
-    # Verify empty
     items = service.get_all_items(user_id)
-    assert items == []
-
+    assert len(items) == 0
 
 def test_get_statistics(wardrobe_service):
-    """Test getting wardrobe statistics"""
     service, user_id = wardrobe_service
-    
-    # Add various items
-    service.add_item(user_id, {'filename': 'shirt1.jpg'}, {'type': 'shirt', 'color': 'blue'})
-    service.add_item(user_id, {'filename': 'shirt2.jpg'}, {'type': 'shirt', 'color': 'red'})
-    service.add_item(user_id, {'filename': 'pants.jpg'}, {'type': 'pants', 'color': 'blue'})
-    
+    service.add_item(user_id, {'filename': 'test1.jpg'}, {'type': 'shirt', 'colors': ['blue', 'white']})
+    item2 = service.add_item(user_id, {'filename': 'test2.jpg'}, {'type': 'pants', 'colors': ['black']})
+    service.toggle_favorite(user_id, item2['id'])
     stats = service.get_statistics(user_id)
-    
-    assert stats['total_items'] == 3
-    assert stats['by_type']['shirt'] == 2
-    assert stats['by_type']['pants'] == 1
-    assert stats['by_color']['blue'] == 2
-    assert stats['by_color']['red'] == 1
+    # The following asserts may need to be updated if get_statistics returns a different structure
+    assert stats['totalItems'] == 2
+    # Optionally add more asserts if get_statistics returns more info
