@@ -18,11 +18,11 @@ services:
     volumes:
       - wardrobe_db:/app/db
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 0s
 
   # Frontend service
   frontend:
