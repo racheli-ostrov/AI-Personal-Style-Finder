@@ -607,3 +607,17 @@
 #         echo "🚀 Deployment step"
 #         echo "Add your deployment commands here"
 #         echo "Examples: docker push, kubectl apply, aws ecs update-service, etc."
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "CI is running"
