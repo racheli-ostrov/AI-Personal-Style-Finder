@@ -50,7 +50,7 @@
 │  │  Services:                                                    │  │
 │  │  • geminiService.js (AI integration)                         │  │
 │  └──────────────────────────────────────────────────────────────┘  │
-│                          Port 5000                                   │
+│                          Port 5001                                   │
 └────────────────┬────────────────────────────────────────────────────┘
                  │
                  │ API Calls
@@ -248,7 +248,7 @@ server.js (Entry Point)
 │  │  nginx:alpine            │  │  node:18-alpine          │ │
 │  │  + React Build           │  │  + Express Server        │ │
 │  │                          │  │  + Gemini Client         │ │
-│  │  Port: 3000 → 80         │  │  Port: 5000              │ │
+│  │  Port: 3000 → 80         │  │  Port: 5001              │ │
 │  │  Size: ~25MB             │  │  Size: ~50MB             │ │
 │  │                          │  │                          │ │
 │  │  Health Check:           │  │  Health Check:           │ │
@@ -363,7 +363,7 @@ server.js (Entry Point)
 
 ### Option 1: Local Development
 ```
-Docker Compose → localhost:3000 & localhost:5000
+Docker Compose → localhost:3000 & localhost:5001
 ```
 
 ### Option 2: Cloud Deployment (AWS Example)

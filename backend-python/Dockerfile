@@ -1,22 +1,20 @@
-# Python backend Dockerfile
+# Image בסיסי עם Python
 FROM python:3.11-slim
 
+# יוצא תיקייה לעבודה במיכל
 WORKDIR /app
 
-# Copy requirements first for better caching
+# מעתיק קבצים של תלותיות תחילה (לשיפור cache)
 COPY requirements.txt .
 
-# Install dependencies
+# מתקין את התלויות תוך התעלמות מבעיות SSL
 RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
 
-# Copy application code
+# מעתיק את שאר הקוד
 COPY . .
 
-# Expose port
-EXPOSE 5000
+# מגדיר הפורט שבו השרת ירוץ
+ENV PORT=5001
 
-# Set environment to production
-ENV NODE_ENV=production
-
-# Run with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "app:create_app()"]
+# פקודת הרצה של השרת
+CMD ["python", "app.py"]

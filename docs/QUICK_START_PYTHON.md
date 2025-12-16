@@ -45,11 +45,11 @@ GEMINI_API_KEY=your-gemini-api-key
 python app.py
 ```
 
-Server will run on `http://localhost:5000`
+Server will run on `http://localhost:5001`
 
 ### Production Mode
 ```bash
-gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 "app:create_app()"
+gunicorn --bind 0.0.0.0:5001 --workers 4 --timeout 120 "app:create_app()"
 ```
 
 ## 🧪 Running Tests
@@ -70,7 +70,7 @@ pytest tests/test_wardrobe_service.py -v
 ### Build and Run
 ```bash
 docker build -t style-finder-backend .
-docker run -p 5000:5000 --env-file .env style-finder-backend
+docker run -p 5001:5001 --env-file .env style-finder-backend
 ```
 
 ### Using Docker Compose (Full Stack)
@@ -83,42 +83,42 @@ docker-compose up --build
 
 ### Health Check
 ```bash
-GET http://localhost:5000/api/health
+GET http://localhost:5001/api/health
 ```
 
 ### Style Analysis
 ```bash
 # Analyze image
-POST http://localhost:5000/api/style/analyze
+POST http://localhost:5001/api/style/analyze
 Content-Type: multipart/form-data
 Body: image=<file>
 
 # Generate profile
-POST http://localhost:5000/api/style/profile
+POST http://localhost:5001/api/style/profile
 
 # Get recommendations
-GET http://localhost:5000/api/style/recommendations/:id
+GET http://localhost:5001/api/style/recommendations/:id
 ```
 
 ### Wardrobe Management
 ```bash
 # Get all items
-GET http://localhost:5000/api/wardrobe
+GET http://localhost:5001/api/wardrobe
 
 # Add item
-POST http://localhost:5000/api/wardrobe
+POST http://localhost:5001/api/wardrobe
 
 # Delete item
-DELETE http://localhost:5000/api/wardrobe/:id
+DELETE http://localhost:5001/api/wardrobe/:id
 
 # Toggle favorite
-PATCH http://localhost:5000/api/wardrobe/:id/favorite
+PATCH http://localhost:5001/api/wardrobe/:id/favorite
 
 # Get statistics
-GET http://localhost:5000/api/wardrobe/statistics
+GET http://localhost:5001/api/wardrobe/statistics
 
 # Clear wardrobe
-DELETE http://localhost:5000/api/wardrobe
+DELETE http://localhost:5001/api/wardrobe
 ```
 
 ## 🛠️ Troubleshooting
@@ -139,11 +139,11 @@ pip install -r requirements.txt
 ### Issue: Port already in use
 ```bash
 # Windows
-netstat -ano | findstr :5000
+netstat -ano | findstr :5001
 taskkill /PID <process_id> /F
 
 # Linux/Mac
-lsof -ti:5000 | xargs kill -9
+lsof -ti:5001 | xargs kill -9
 ```
 
 ## 📊 Project Structure

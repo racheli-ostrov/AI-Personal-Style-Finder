@@ -76,7 +76,7 @@ Frontend (React) ← REST API → Backend (Node.js) ← AI Calls → Gemini API
    - Interactive wardrobe gallery
    - Real-time updates
 
-2. **Node.js Backend** (Port 5000)
+2. **Node.js Backend** (Port 5001)
    - Express REST API
    - Image processing with Multer
    - Business logic layer
@@ -216,7 +216,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
-EXPOSE 5000
+EXPOSE 5001
 CMD ["node", "src/server.js"]
 ```
 

@@ -166,7 +166,7 @@ npm start
 
 **Verify:**
 - ✅ Frontend: http://localhost:3000
-- ✅ Backend: http://localhost:5000/api/health
+- ✅ Backend: http://localhost:5001/api/health
 - ✅ Upload an image
 - ✅ Check AI analysis
 - ✅ Generate style profile

@@ -129,13 +129,13 @@ python app.py
 
 ### Production (with Gunicorn)
 ```bash
-gunicorn --bind 0.0.0.0:5000 --workers 4 app:create_app()
+gunicorn --bind 0.0.0.0:5001 --workers 4 app:create_app()
 ```
 
 ### Docker
 ```bash
 docker build -t style-finder-backend .
-docker run -p 5000:5000 --env-file .env style-finder-backend
+docker run -p 5001:5001 --env-file .env style-finder-backend
 ```
 
 ## 🔧 Configuration
@@ -143,7 +143,7 @@ docker run -p 5000:5000 --env-file .env style-finder-backend
 Create `.env` file:
 ```bash
 GEMINI_API_KEY=your-gemini-api-key
-PORT=5000
+PORT=5001
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 ```

@@ -81,7 +81,7 @@
 # #     - name: Build application
 # #       run: npm run build
 # #       env:
-# #         REACT_APP_API_URL: http://localhost:5000/api
+# #         REACT_APP_API_URL: http://localhost:5001/api
     
 # #     - name: Build Docker image
 # #       run: docker build -t style-finder-frontend:${{ github.sha }} .
@@ -136,7 +136,7 @@
 # #         timeout 180 bash -c 'until docker compose ps | grep -q "healthy"; do sleep 2; done'
     
 # #     - name: Check backend health
-# #       run: curl -f http://localhost:5000/api/health || exit 1
+# #       run: curl -f http://localhost:5001/api/health || exit 1
     
 # #     - name: Check frontend availability
 # #       run: curl -f http://localhost:3000 || exit 1
@@ -281,7 +281,7 @@
 #     - name: Build application
 #       run: npm run build
 #       env:
-#         REACT_APP_API_URL: http://localhost:5000/api
+#         REACT_APP_API_URL: http://localhost:5001/api
     
 #     - name: Build Docker image
 #       run: docker build -t style-finder-frontend:${{ github.sha }} .
@@ -337,7 +337,7 @@
 #         timeout 120 bash -c 'until docker-compose ps | grep -q "healthy"; do sleep 2; done'
     
 #     - name: Check backend health
-#       run: curl -f http://localhost:5000/api/health || exit 1
+#       run: curl -f http://localhost:5001/api/health || exit 1
     
 #     - name: Check frontend availability
 #       run: curl -f http://localhost:3000 || exit 1
@@ -483,7 +483,7 @@ jobs:
     - name: Build application
       run: npm run build
       env:
-        REACT_APP_API_URL: http://localhost:5000/api
+        REACT_APP_API_URL: http://localhost:5001/api
     
     - name: Build Docker image
       run: docker build -t style-finder-frontend:${{ github.sha }} .

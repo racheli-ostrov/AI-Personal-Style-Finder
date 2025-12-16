@@ -8,17 +8,17 @@ services:
       dockerfile: Dockerfile
     container_name: style-finder-backend
     ports:
-      - "5000:5000"
+      - "5001:5001"
     environment:
       - NODE_ENV=production
-      - PORT=5000
+      - PORT=5001
       - FRONTEND_URL=http://localhost:3000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: unless-stopped
     volumes:
       - wardrobe_db:/app/db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -33,7 +33,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_URL=http://backend:5000/api
+      - REACT_APP_API_URL=http://backend:5001/api
     depends_on:
       - backend
     restart: unless-stopped

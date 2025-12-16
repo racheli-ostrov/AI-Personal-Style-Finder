@@ -46,7 +46,7 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 5001))
     debug = os.getenv('NODE_ENV', 'development') == 'development'
     debug_print(f'🚀 Server is running on port {port}')
     debug_print(f'📊 Environment: {os.getenv("NODE_ENV", "development")}')

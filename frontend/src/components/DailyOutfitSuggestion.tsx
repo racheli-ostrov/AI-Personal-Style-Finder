@@ -34,7 +34,7 @@ const DailyOutfitSuggestion: React.FC<DailyOutfitSuggestionProps> = ({ wardrobeI
       // Try to get user's location
       try {
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          const timeout = setTimeout(() => reject(new Error('Location timeout')), 5000);
+          const timeout = setTimeout(() => reject(new Error('Location timeout')), 5001);
           navigator.geolocation.getCurrentPosition(
             (pos) => {
               clearTimeout(timeout);

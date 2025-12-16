@@ -17,7 +17,7 @@
 ┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
 │                 │         │                 │         │                 │
 │  React Frontend │◄───────►│  Node.js API    │◄───────►│  Gemini AI API  │
-│  (Port 3000)    │   REST  │  (Port 5000)    │   AI    │  (Google)       │
+│  (Port 3000)    │   REST  │  (Port 5001)    │   AI    │  (Google)       │
 │                 │         │                 │         │                 │
 └─────────────────┘         └─────────────────┘         └─────────────────┘
         │                           │
@@ -70,7 +70,7 @@ Frontend:
 ```bash
 cd frontend
 cp .env.example .env
-# Edit .env if needed (default: http://localhost:5000/api)
+# Edit .env if needed (default: http://localhost:5001/api)
 ```
 
 3. **Install dependencies**

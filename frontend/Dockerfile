@@ -1,35 +1,26 @@
-# Frontend Dockerfile - Multi-stage build
-FROM node:18-alpine AS build
+# בוחר image בסיסי עם Node
+FROM node:20-alpine
 
+# יוצא תיקייה לעבודה
 WORKDIR /app
 
-# Copy package files
+# מעתיק קבצי package.json וקבצי lock
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --legacy-peer-deps && npm cache clean --force
+# מתקין תלותיות
+RUN npm install
 
-# Copy source code
+# מעתיק את שאר הקבצים
 COPY . .
 
-# Build the application
+# בונה את אפליקציית React
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
+# מריץ שרת קטן עבור הקבצים המובנים (serve)
+RUN npm install -g serve
 
-# Copy built files from build stage
-COPY --from=build /app/build /usr/share/nginx/html
+# מגדיר הפורט שבו השרת ירוץ
+ENV PORT=80
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# פקודת הרצה
+CMD ["serve", "-s", "build", "-l", "80"]

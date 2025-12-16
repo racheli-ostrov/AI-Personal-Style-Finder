@@ -64,7 +64,7 @@ cp .env.example .env
 
 python app.py
 ```
-**Backend runs on**: `http://localhost:5000`
+**Backend runs on**: `http://localhost:5001`
 
 ### 2. Frontend Setup
 ```bash
@@ -183,8 +183,8 @@ docker-compose up
 
 ### Access
 - **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Health Check**: http://localhost:5000/api/health
+- **Backend API**: http://localhost:5001
+- **Health Check**: http://localhost:5001/api/health
 
 ---
 
@@ -225,7 +225,7 @@ docker-compose up
 ### Backend `.env`
 ```bash
 GEMINI_API_KEY=your-gemini-api-key
-PORT=5000
+PORT=5001
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 ```
@@ -290,17 +290,17 @@ pip install --upgrade pip
 cat .env | grep GEMINI_API_KEY
 
 # Test with curl
-curl -X GET http://localhost:5000/api/health
+curl -X GET http://localhost:5001/api/health
 ```
 
 ### Port Conflicts
 ```bash
 # Windows
-netstat -ano | findstr :5000
+netstat -ano | findstr :5001
 taskkill /PID <pid> /F
 
 # Linux/Mac
-lsof -ti:5000 | xargs kill -9
+lsof -ti:5001 | xargs kill -9
 ```
 
 ---

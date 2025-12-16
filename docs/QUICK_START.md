@@ -56,8 +56,8 @@ Wait for:
 
 **Access the application:**
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- Health Check: http://localhost:5000/api/health
+- Backend API: http://localhost:5001
+- Health Check: http://localhost:5001/api/health
 
 ---
 
@@ -78,7 +78,7 @@ npm run dev
 
 Should see:
 ```
-🚀 Server is running on port 5000
+🚀 Server is running on port 5001
 📊 Environment: development
 ```
 
@@ -208,7 +208,7 @@ docker --version
 ```powershell
 # Check what's using the ports
 netstat -ano | findstr :3000
-netstat -ano | findstr :5000
+netstat -ano | findstr :5001
 
 # Kill the process or change ports in docker-compose.yml
 ```
@@ -237,7 +237,7 @@ npm test
 ### Frontend Issues
 
 **Problem: "Failed to fetch"**
-- Check backend is running on port 5000
+- Check backend is running on port 5001
 - Check REACT_APP_API_URL in frontend/.env
 - Check CORS settings in backend
 
@@ -274,7 +274,7 @@ npm test
 GEMINI_API_KEY=your-gemini-api-key
 
 # Optional (with defaults)
-PORT=5000
+PORT=5001
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 ```
@@ -283,7 +283,7 @@ FRONTEND_URL=http://localhost:3000
 
 ```env
 # Optional (with defaults)
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=http://localhost:5001/api
 ```
 
 ### Docker Compose Environment
@@ -299,43 +299,43 @@ GEMINI_API_KEY=your-gemini-api-key
 
 ### Health Check
 ```
-GET http://localhost:5000/api/health
+GET http://localhost:5001/api/health
 ```
 
 ### Analyze Image
 ```
-POST http://localhost:5000/api/style/analyze
+POST http://localhost:5001/api/style/analyze
 Content-Type: multipart/form-data
 Body: image file
 ```
 
 ### Generate Style Profile
 ```
-POST http://localhost:5000/api/style/profile
+POST http://localhost:5001/api/style/profile
 Content-Type: application/json
 Body: { "wardrobeItems": [...] }
 ```
 
 ### Get Wardrobe
 ```
-GET http://localhost:5000/api/wardrobe
+GET http://localhost:5001/api/wardrobe
 ```
 
 ### Add to Wardrobe
 ```
-POST http://localhost:5000/api/wardrobe
+POST http://localhost:5001/api/wardrobe
 Content-Type: application/json
 Body: { "analysis": {...}, "imageData": "..." }
 ```
 
 ### Delete from Wardrobe
 ```
-DELETE http://localhost:5000/api/wardrobe/:id
+DELETE http://localhost:5001/api/wardrobe/:id
 ```
 
 ### Toggle Favorite
 ```
-PATCH http://localhost:5000/api/wardrobe/:id/favorite
+PATCH http://localhost:5001/api/wardrobe/:id/favorite
 ```
 
 ---

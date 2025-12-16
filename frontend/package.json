@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Frontend for AI Personal Style Finder - Upload wardrobe photos and get personalized style recommendations",
   "private": true,
+  "proxy": "http://localhost:5001",
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
     "axios": "^0.27.2",
