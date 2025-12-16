@@ -529,13 +529,13 @@ jobs:
         docker tag style-finder-frontend:${{ github.sha }} style-finder-frontend:latest
     
     - name: Start services with Docker Compose
-      run: docker-compose up -d
+      run: docker compose up -d
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     
     - name: Wait for services to be healthy
       run: |
-        timeout 120 bash -c 'until docker-compose ps | grep -q "healthy"; do sleep 2; done'
+        timeout 120 bash -c 'until docker compose ps | grep -q "healthy"; do sleep 2; done'
     
     - name: Check backend health
       run: curl -f http://localhost:5000/api/health || exit 1
@@ -545,11 +545,11 @@ jobs:
     
     - name: Show logs on failure
       if: failure()
-      run: docker-compose logs
+      run: docker compose logs
     
     - name: Stop services
       if: always()
-      run: docker-compose down
+      run: docker compose down
 
   # Deploy stage (optional - for production)
   deploy:
