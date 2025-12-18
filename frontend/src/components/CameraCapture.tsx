@@ -227,10 +227,12 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
   // ===============================
   // Lifecycle
   // ===============================
-  useEffect(() => {
-    startCamera();
-    return () => stopCamera();
-  }, []);
+useEffect(() => {
+  startCamera();
+  return () => stopCamera();
+}, [startCamera, stopCamera]);
+
+
 
   // ===============================
   // Capture photo
