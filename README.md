@@ -1,3 +1,26 @@
+# בדיקות אוטומטיות וכיסוי
+
+## Backend (Python)
+להריץ את כל הבדיקות:
+```
+pytest backend-python/tests
+```
+להריץ עם דוח כיסוי:
+```
+pytest --cov=backend-python backend-python/tests
+```
+
+## Frontend (React)
+להריץ את כל הבדיקות:
+```
+npm test
+```
+להריץ עם דוח כיסוי:
+```
+npm test -- --coverage
+```
+
+דוחות coverage יופיעו בתיקיות coverage/htmlcov (backend) ו־frontend/coverage (frontend).
 # AI Personal Style Finder 👗✨
 
 ![Architecture](./docs/architecture-diagram.png)
