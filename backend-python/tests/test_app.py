@@ -18,13 +18,15 @@ def test_app_creation():
     app = create_app()
     assert app is not None
 
+
 def test_get_wardrobe(client):
-    response = client.get("/api/wardrobe/")
+    response = client.get("/api/wardrobe/?userId=testuser")
     assert response.status_code == 200
-    # אפשר לבדוק גם את מבנה התגובה אם תרצה
+
+
 
 def test_post_wardrobe(client):
-    data = {"item": "shirt", "color": "blue"}
+    data = {"userId": "testuser", "analysis": {}, "imageInfo": {"filename": "test.jpg", "mimetype": "image/jpeg", "data": ""}}
     response = client.post("/api/wardrobe/", json=data)
     assert response.status_code in [200, 201, 400]
 

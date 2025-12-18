@@ -1,3 +1,48 @@
+# בדיקות אוטומטיות ודוח כיסוי (Coverage)
+
+הפרויקט כולל בדיקות אוטומטיות ל־backend וה־frontend.
+
+## איך מריצים בדיקות וכיסוי
+
+### Backend (Python)
+להריץ את כל הבדיקות:
+```
+$env:PYTHONPATH = $PWD
+& ".venv/Scripts/python.exe" -m pytest backend-python/tests
+```
+להריץ עם דוח כיסוי:
+```
+$env:PYTHONPATH = $PWD
+& ".venv/Scripts/python.exe" -m pytest --cov=. backend-python/tests
+```
+דוח HTML ייווצר בתיקיית backend-python/htmlcov
+
+### Frontend (React)
+להריץ את כל הבדיקות:
+```
+npm test
+```
+להריץ עם דוח כיסוי:
+```
+npm test -- --coverage
+```
+דוח coverage ייווצר בתיקיית frontend/coverage
+
+## עקיפת הרשאות בטסטים
+בזמן הרצת בדיקות, מוגדר app.config["TESTING"] = True, וכל בדיקות ההרשאות (userId/token) עוקxxx אימות כדי לאפשר בדיקות מלאות גם ללא תלות ב־login.
+
+## דוגמה לאחוז כיסוי
+```
+========================================== tests coverage ===========================================
+Name                                       Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------
+app.py                                        36      7    81%   23, 48-53
+controllers/wardrobe_controller.py            78     53    32%   ...
+... (שאר הקבצים)
+TOTAL                                        706    465    34%
+Coverage HTML written to dir htmlcov
+```
+הדרישה: להגיע ל־40% כיסוי לפחות. ניתן להוסיף בדיקות לפונקציות נוסxxx כדי להגדיל את האחוז.
 # בדיקות אוטומטיות וכיסוי
 
 ## Backend (Python)
