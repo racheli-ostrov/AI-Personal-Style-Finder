@@ -1,3 +1,198 @@
+/* --- Profile Navbar --- */
+.profile-navbar-section {
+  margin-top: 18px;
+}
+.profile-navbar {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  justify-content: center;
+  margin-bottom: 1.2em;
+  flex-wrap: wrap;
+}
+.profile-navbar-btn {
+  background: #f7f6fa;
+  color: #7f53ac;
+  border: none;
+  border-radius: 18px;
+  padding: 0.5em 1.2em;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(127,83,172,0.07);
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  outline: none;
+}
+.profile-navbar-btn.active, .profile-navbar-btn:focus {
+  background: linear-gradient(90deg, #7f53ac 0%, #657ced 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(127,83,172,0.13);
+}
+.profile-navbar-btn:hover:not(.active) {
+  background: #ede7fa;
+  color: #7f53ac;
+}
+.profile-navbar-content {
+  animation: fadeTab 0.3s;
+}
+@media (max-width: 600px) {
+  .profile-navbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* --- Profile Tabs --- */
+.profile-tabs-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.5em 0 0.7em 0;
+}
+.profile-tabs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  justify-content: center;
+  margin-bottom: 1.2em;
+}
+.profile-tab-btn {
+  background: #f7f6fa;
+  color: #7f53ac;
+  border: none;
+  border-radius: 18px;
+  padding: 0.5em 1.2em;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(127,83,172,0.07);
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  outline: none;
+}
+.profile-tab-btn.active, .profile-tab-btn:focus {
+  background: linear-gradient(90deg, #7f53ac 0%, #657ced 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(127,83,172,0.13);
+}
+.profile-tab-btn:hover:not(.active) {
+  background: #ede7fa;
+  color: #7f53ac;
+}
+.profile-tab-content {
+  animation: fadeTab 0.3s;
+}
+@keyframes fadeTab {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.color-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 6px 0 0;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(127,83,172,0.10);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.color-circle:hover {
+  transform: scale(1.13);
+  z-index: 2;
+}
+.color-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background: #222;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 10px;
+  position: absolute;
+  z-index: 10;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.color-circle:hover .color-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.profile-divider {
+  border: none;
+  border-top: 2px dashed #e0e0e0;
+  margin: 18px 0 10px 0;
+  opacity: 0.5;
+}
+/* --- Modal styles for profile --- */
+
+.profile-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(40, 40, 60, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInSoft 0.35s;
+  backdrop-filter: blur(2.5px);
+}
+@keyframes fadeInSoft {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.profile-modal {
+  background: rgba(255,255,255,0.92);
+  border-radius: 22px;
+  box-shadow: 0 6px 32px 0 rgba(60,60,120,0.13), 0 1.5px 8px 0 rgba(127,83,172,0.08);
+  padding: 1.5rem 1.7rem 1.3rem 1.7rem;
+  min-width: 320px;
+  max-width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeCardIn 0.45s cubic-bezier(.23,1.01,.32,1);
+  transition: box-shadow 0.2s, background 0.2s;
+}
+@keyframes fadeCardIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  background: rgba(127,83,172,0.09);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.25em;
+  color: #7f53ac;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 4px rgba(127,83,172,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.close-modal-btn:hover {
+  background: #f3eaff;
+  color: #b00020;
+}
+
+@media (max-width: 600px) {
+  .profile-modal {
+    padding: 0.7rem 0.3rem 0.7rem 0.3rem;
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
 .style-profile {
   width: 100%;
   margin: 30px 0;
