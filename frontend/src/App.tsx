@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ImageUpload from './components/ImageUpload';
-import WardrobeGallery from './components/WardrobeGallery';
-import StyleProfile from './components/StyleProfile';
+import WardrobeGallery from './components/wardrobe/WardrobeGallery';
+import StyleProfile from './components/StyleProfile/StyleProfile';
 import DailyOutfitSuggestion from './components/DailyOutfitSuggestion';
-import Login from './components/Login';
+import Login from './components/Login/Login';
 import { wardrobeAPI } from './services/api';
 import { WardrobeItem, Notification } from './types';
 import './App.css';

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import CameraCapture from "../components/CameraCapture";
+import CameraCapture from "../components/CameraCapture/CameraCapture";
 
 describe("CameraCapture", () => {
   test("מציג כפתור צילום", () => {

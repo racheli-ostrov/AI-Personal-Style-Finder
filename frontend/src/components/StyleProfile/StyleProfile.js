@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { styleAPI } from '../services/api';
+import { styleAPI } from '../../services/api';
 import './StyleProfile.css';
 
 /* =========================

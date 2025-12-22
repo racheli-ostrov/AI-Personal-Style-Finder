@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { WardrobeItem } from '../types';
-import ShoppingRecommendations from './ShoppingRecommendations';
+import { WardrobeItem } from '../../types';
+import ShoppingRecommendations from '../ShoppingRecommendations/ShoppingRecommendations';
 import './WardrobeGallery.css';
 
 interface WardrobeGalleryProps {
