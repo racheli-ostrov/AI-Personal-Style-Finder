@@ -16,8 +16,11 @@ COPY . .
 # בונה את אפליקציית React
 RUN npm run build
 
-# מריץ שרת קטן עבור הקבצים המובנים (serve)
-RUN npm install -g serve
+
+# מנקה משתני proxy ומסיר קובץ .npmrc לפני התקנת serve
+RUN rm -f /root/.npmrc /app/.npmrc || true \
+	&& unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY npm_config_proxy npm_config_https_proxy \
+	&& npm install -g serve
 
 # מגדיר הפורט שבו השרת ירוץ
 ENV PORT=80

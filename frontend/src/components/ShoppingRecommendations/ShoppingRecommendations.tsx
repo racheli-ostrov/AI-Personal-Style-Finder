@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getShoppingRecommendations, ShoppingRecommendation } from '../services/shopping';
+import { getShoppingRecommendations, ShoppingRecommendation } from '../../services/shopping';
 import './ShoppingRecommendations.css';
 
 interface ShoppingRecommendationsProps {

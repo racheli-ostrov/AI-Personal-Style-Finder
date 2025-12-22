@@ -1,8 +1,16 @@
+
+import os
+
+# 🚫 FORCE DISABLE PROXY — ALWAYS
+os.environ.pop("HTTP_PROXY", None)
+os.environ.pop("HTTPS_PROXY", None)
+os.environ.pop("http_proxy", None)
+os.environ.pop("https_proxy", None)
+
 """
 Gemini AI Service
 Handles all interactions with Google's Gemini API
 """
-import os
 import base64
 import json
 from typing import Dict, List, Any
@@ -40,7 +48,7 @@ class GeminiService:
         print(f"🔑 Loaded {len(self.api_keys)} API key(s)")
         for i, key in enumerate(self.api_keys, 1):
             masked_key = f"{key[:8]}...{key[-4:]}"
-            print(f"   Key {i}: {masked_key}")
+            print(f"   Key {i}: {masked_key}")  # Consider replacing with logger.debug in production
         
         self.api_url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
     
@@ -84,7 +92,8 @@ Provide accurate and specific information based on what you see in the image.
 """
 
 
-            # Convert image to base64
+            # Log image size only, do not print image data
+            print(f"[DEBUG] image size: {len(image_data)} chars")
             image_base64 = base64.b64encode(image_data).decode('utf-8')
             
             # Prepare request payload
@@ -116,7 +125,8 @@ Provide accurate and specific information based on what you see in the image.
                         json=payload,
                         headers={'Content-Type': 'application/json'},
                         timeout=60,
-                        verify=False
+                        verify=False,
+                        proxies={}  # 🚫 NO PROXY EVER
                     )
                     
                     if response.status_code == 200:
@@ -326,7 +336,8 @@ Suggest 3-5 best matching items."""
                 json=payload,
                 headers={'Content-Type': 'application/json'},
                 timeout=60,
-                verify=False
+                verify=False,
+                proxies={}  # 🚫 NO PROXY EVER
             )
             
             if response.status_code != 200:
