@@ -47,8 +47,11 @@ def create_app():
         return {'status': 'ok', 'message': 'Server is running'}
     return app
 
+
+# הפוך את app לגלובלי לייבוא בבדיקות
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     port = int(os.getenv('PORT', 5001))
     debug = os.getenv('NODE_ENV', 'development') == 'development'
     debug_print(f'🚀 Server is running on port {port}')

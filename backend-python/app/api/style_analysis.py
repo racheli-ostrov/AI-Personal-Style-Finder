@@ -59,9 +59,14 @@ def generate_profile():
     if not user_id:
         return jsonify({"success": False, "error": "User ID required"}), 401
 
-    result = style_analysis_service.generate_style_profile(user_id)
-
-    return jsonify({
-        "success": True,
-        "data": result
-    }), 200
+    try:
+        result = style_analysis_service.generate_style_profile(user_id)
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 400
