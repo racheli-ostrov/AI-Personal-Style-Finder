@@ -32,10 +32,11 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "*"}})
     # Configure app
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max file size
-    # Register blueprints
-    from api.style_analysis import style_analysis_bp
-    from api.wardrobe import wardrobe_bp
-    from api.shopping import shopping_bp
+    # Register blueprints (use package-qualified imports so module
+    # resolution works when running under Gunicorn/Werkzeug)
+    from app.api.style_analysis import style_analysis_bp
+    from app.api.wardrobe import wardrobe_bp
+    from app.api.shopping import shopping_bp
     app.register_blueprint(style_analysis_bp, url_prefix='/api/style')
     app.register_blueprint(wardrobe_bp, url_prefix='/api/wardrobe')
     app.register_blueprint(shopping_bp, url_prefix='/api/shopping')

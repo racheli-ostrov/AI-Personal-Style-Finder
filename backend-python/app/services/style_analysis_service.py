@@ -1,5 +1,5 @@
-from services.gemini_service import gemini_service
-from services.wardrobe_service import wardrobe_service
+from app.services.gemini_service import gemini_service
+from app.services.wardrobe_service import wardrobe_service
 from datetime import datetime
 
 class StyleAnalysisService:

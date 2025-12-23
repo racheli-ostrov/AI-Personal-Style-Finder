@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from services.style_analysis_service import style_analysis_service
-from services.wardrobe_service import wardrobe_service
+from app.services.style_analysis_service import style_analysis_service
+from app.services.wardrobe_service import wardrobe_service
 import base64
 
 style_analysis_bp = Blueprint(

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.wardrobe_service import wardrobe_service
+from app.services.wardrobe_service import wardrobe_service
 
 wardrobe_bp = Blueprint(
     "wardrobe",

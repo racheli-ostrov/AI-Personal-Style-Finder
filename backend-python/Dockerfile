@@ -31,4 +31,4 @@ RUN unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY && \
 
 COPY . .
 
-CMD ["/bin/sh", "-c", "unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; python app/app.py"]
+CMD ["/bin/sh", "-c", "unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; exec gunicorn -b 0.0.0.0:5001 app.wsgi:app --workers 4 --threads 4 --log-level info"]

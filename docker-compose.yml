@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Server folder (build context): backend-python
   # Backend service (Python)
   backend:
     build:
