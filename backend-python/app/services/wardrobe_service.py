@@ -119,8 +119,10 @@ class WardrobeService:
             (new_value, item_id, user_id)
         )
         conn.commit()
+        # Return the full, parsed item so frontend can replace the item in state
+        updated_row = conn.execute("SELECT * FROM wardrobe WHERE id=? AND user_id=?", (item_id, user_id)).fetchone()
         conn.close()
-        return {"id": item_id, "favorite": bool(new_value)}
+        return self._parse_row(updated_row)
 
     def clear_wardrobe(self, user_id):
         conn = get_db()

@@ -26,13 +26,14 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
   // Debug: Print all items to console to help diagnose filter issues
   console.log('Wardrobe items:', items);
   items.forEach((item, idx) => {
-    console.log(`Item #${idx + 1}:`, item.analysis);
+    console.log(`Item #${idx + 1}:`, item.analysis ?? null);
   });
   // Extract unique values for filters
   const uniqueTypes = useMemo(() => {
     const types = new Set<string>();
     items.forEach(item => {
-      const type = (item.analysis.clothing_type || item.analysis.itemType || '').toLowerCase();
+      const analysis = item.analysis || {};
+      const type = ((analysis.clothing_type as string) || (analysis.itemType as string) || '').toLowerCase();
       if (type) types.add(type);
     });
     return Array.from(types).sort();
@@ -41,7 +42,8 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
   const uniqueColors = useMemo(() => {
     const colors = new Set<string>();
     items.forEach(item => {
-      item.analysis.colors?.forEach(color => colors.add(color.toLowerCase()));
+      const colorsArr = item.analysis?.colors || [];
+      colorsArr.forEach((color: string) => colors.add(color.toLowerCase()));
     });
     return Array.from(colors).sort();
   }, [items]);
@@ -52,7 +54,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
   const uniqueSeasons = useMemo(() => {
     const seasons = new Set<string>();
     items.forEach(item => {
-      const season = item.analysis.season?.toLowerCase();
+      const season = (item.analysis?.season || '').toLowerCase();
       if (season) seasons.add(season);
     });
     return Array.from(seasons).sort();
@@ -68,7 +70,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
 
       // Type filter
       if (filterType !== 'all') {
-        const itemType = (item.analysis.clothing_type || item.analysis.itemType || '').toLowerCase();
+        const itemType = ((item.analysis?.clothing_type as string) || (item.analysis?.itemType as string) || '').toLowerCase();
         if (!itemType.includes(filterType.toLowerCase())) {
           return false;
         }
@@ -76,7 +78,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
 
       // Color filter
       if (filterColor !== 'all') {
-        const hasColor = item.analysis.colors?.some(c => 
+        const hasColor = (item.analysis?.colors || []).some((c: string) => 
           c.toLowerCase().includes(filterColor.toLowerCase())
         );
         if (!hasColor) {
@@ -86,7 +88,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
 
       // Occasion filter
       if (filterOccasion !== 'all') {
-        const occasions = item.analysis.occasions?.map(o => o.toLowerCase()) || [];
+        const occasions = (item.analysis?.occasions || []).map((o: string) => o.toLowerCase());
         if (!occasions.includes(filterOccasion.toLowerCase())) {
           return false;
         }
@@ -94,7 +96,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
 
       // Season filter
       if (filterSeason !== 'all') {
-        const season = item.analysis.season?.toLowerCase() || '';
+        const season = (item.analysis?.season || '').toLowerCase();
         if (season !== filterSeason.toLowerCase()) {
           return false;
         }
@@ -195,7 +197,7 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
               {(item.imageData || item.imageUrl) && (
                 <img 
                   src={item.imageData || item.imageUrl} 
-                  alt={item.analysis.itemType || item.analysis.clothing_type || 'clothing'} 
+                  alt={(item.analysis?.itemType || item.analysis?.clothing_type) || 'clothing'} 
                   className="item-image" 
                 />
               )}
@@ -212,18 +214,18 @@ const WardrobeGallery: React.FC<WardrobeGalleryProps> = ({
             </div>
             
             <div className="item-details">
-              <h3 className="item-type">{item.analysis.itemType || item.analysis.clothing_type}</h3>
+              <h3 className="item-type">{(item.analysis?.itemType || item.analysis?.clothing_type) || 'Unknown'}</h3>
               
               <div className="item-colors">
-                {item.analysis.colors?.slice(0, 3).map((color, idx) => (
+                {(item.analysis?.colors || []).slice(0, 3).map((color: string, idx: number) => (
                   <span key={idx} className="color-badge">{color}</span>
                 ))}
               </div>
               
               <div className="item-tags">
-                <span className="tag">{item.analysis.style}</span>
-                {item.analysis.formality && <span className="tag">{item.analysis.formality}</span>}
-                {item.analysis.season && <span className="tag">{item.analysis.season}</span>}
+                {item.analysis?.style && <span className="tag">{item.analysis.style}</span>}
+                {item.analysis?.formality && <span className="tag">{item.analysis.formality}</span>}
+                {item.analysis?.season && <span className="tag">{item.analysis.season}</span>}
               </div>
               
               <button
