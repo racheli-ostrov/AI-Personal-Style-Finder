@@ -5,7 +5,7 @@ import os
 import sys
 import pytest
 
-# Add backend-python to path
+# Add backend to path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 # Set test environment
