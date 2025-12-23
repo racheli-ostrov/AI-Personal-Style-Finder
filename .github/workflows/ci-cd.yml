@@ -14,7 +14,7 @@
     
 # # #     defaults:
 # # #       run:
-# # #         working-directory: ./backend-python
+# # #         working-directory: ./backend
     
 # # #     steps:
 # # #     - name: Checkout code
@@ -25,7 +25,7 @@
 # # #       with:
 # # #         python-version: '3.11'
 # # #         cache: 'pip'
-# # #         cache-dependency-path: backend-python/requirements.txt
+# # #         cache-dependency-path: backend/requirements.txt
     
 # # #     - name: Install dependencies
 # # #       run: |
@@ -42,7 +42,7 @@
 # #         flags: backend
 # #     - name: Save Docker image
 # #         name: backend-image
-# #         path: backend-python/backend-image.tar.gz
+# #         path: backend/backend-image.tar.gz
 # #         retention-days: 1
 
 # #   # Frontend tests and build
@@ -202,7 +202,7 @@
     
 #     defaults:
 #       run:
-#         working-directory: ./backend-python
+#         working-directory: ./backend
     
 #     steps:
 #     - name: Checkout code
@@ -213,7 +213,7 @@
 #       with:
 #         python-version: '3.11'
 #         cache: 'pip'
-#         cache-dependency-path: backend-python/requirements.txt
+#         cache-dependency-path: backend/requirements.txt
     
 #     - name: Install dependencies
 #       run: |
@@ -228,7 +228,7 @@
 #     - name: Upload coverage reports
 #       uses: codecov/codecov-action@v3
 #       with:
-#         files: ./backend-python/htmlcov/coverage.xml
+#         files: ./backend/htmlcov/coverage.xml
 #         flags: backend
 #         name: backend-coverage
     
@@ -242,7 +242,7 @@
 #       uses: actions/upload-artifact@v4
 #       with:
 #         name: backend-image
-#         path: backend-python/backend-image.tar.gz
+#         path: backend/backend-image.tar.gz
 #         retention-days: 1
 
 #   # Frontend tests and build
@@ -404,7 +404,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./backend-python
+        working-directory: ./backend
     
     steps:
     - name: Checkout code
@@ -415,7 +415,7 @@ jobs:
       with:
         python-version: '3.11'
         cache: 'pip'
-        cache-dependency-path: backend-python/requirements.txt
+        cache-dependency-path: backend/requirements.txt
     
     - name: Install dependencies
       run: |
@@ -430,7 +430,7 @@ jobs:
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
       with:
-        files: ./backend-python/htmlcov/coverage.xml
+        files: ./backend/htmlcov/coverage.xml
         flags: backend
         name: backend-coverage
     
@@ -444,7 +444,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: backend-image
-        path: backend-python/backend-image.tar.gz
+        path: backend/backend-image.tar.gz
         retention-days: 1
 
   # Frontend tests and build

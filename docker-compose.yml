@@ -4,7 +4,7 @@ services:
   # Backend service (Python)
   backend:
     build:
-      context: ./backend-python
+      context: ./backend
       dockerfile: Dockerfile
     container_name: style-finder-backend
     ports:
@@ -16,7 +16,7 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: unless-stopped
     volumes:
-      - ./backend-python/app/db:/app/db
+      - ./backend/app/db:/app/db
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
       interval: 5s

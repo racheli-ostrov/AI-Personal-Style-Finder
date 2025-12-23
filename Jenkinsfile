@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build Backend Docker Image') {
             steps {
-                dir('backend-python') {
+                dir('backend') {
                     script {
                         docker.build(env.IMAGE_NAME_BACKEND)
                     }
