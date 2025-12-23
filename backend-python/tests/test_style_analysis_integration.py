@@ -1,12 +1,12 @@
 def test_generate_profile_missing_userid():
-    from app import app
+    from app.app import app
     client = app.test_client()
     resp = client.post('/api/style/profile', json={})
     assert resp.status_code == 401
     assert not resp.json['success']
 
 def test_generate_profile_error(monkeypatch):
-    from app import app
+    from app.app import app
     client = app.test_client()
     # Patch service to raise error
     import app.services.style_analysis_service as sas

@@ -1,5 +1,5 @@
 import pytest
-from app import app
+from app.app import app
 
 def test_get_all_items_missing_userid():
     client = app.test_client()

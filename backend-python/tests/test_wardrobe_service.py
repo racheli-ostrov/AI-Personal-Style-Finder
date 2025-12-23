@@ -16,8 +16,9 @@ def test_get_statistics_analysis_exception():
     service.clear_wardrobe(user_id)
     # Insert item with analysis that will cause exception in json.loads
     conn = get_db()
+    # Use a valid but malformed JSON string to trigger the exception
     conn.execute("INSERT INTO wardrobe (user_id, image_info, analysis, added_at) VALUES (?, ?, ?, ?)",
-                 (user_id, '{}', object(), 'now'))
+                 (user_id, '{}', '{bad json}', 'now'))
     conn.commit()
     conn.close()
     stats = service.get_statistics(user_id)
@@ -385,7 +386,7 @@ def test_clear_wardrobe(service):
 Tests for Wardrobe Service
 """
 import pytest
-from services.wardrobe_service import WardrobeService
+from app.services.wardrobe_service import WardrobeService
 
 @pytest.fixture
 def wardrobe_service():
