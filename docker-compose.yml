@@ -14,9 +14,9 @@ services:
       - PORT=5001
       - FRONTEND_URL=http://localhost:3000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - RESET_DB_ON_START=true
     restart: unless-stopped
-    volumes:
-      - ./backend-python/app/db:/app/db
+    # No host bind-mount for /app/db so the SQLite DB is ephemeral
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
       interval: 5s

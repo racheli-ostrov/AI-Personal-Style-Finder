@@ -25,6 +25,20 @@ else:
 def create_app():
     """Create and configure the Flask application"""
     app = Flask(__name__)
+    # Optionally reset DB on startup when environment variable is set to a truthy value.
+    try:
+        if os.getenv('RESET_DB_ON_START', 'false').lower() in ('1', 'true', 'yes'):
+            db_dir = os.path.join(os.path.dirname(__file__), 'db')
+            db_file = os.path.join(db_dir, 'wardrobe.sqlite3')
+            if os.path.exists(db_file):
+                debug_print(f"🔁 RESET_DB_ON_START is set — removing DB file: {db_file}")
+                try:
+                    os.remove(db_file)
+                except Exception as e:
+                    debug_print(f"Failed to remove DB file: {e}")
+    except Exception:
+        # Keep startup resilient; don't crash the whole app because of reset logic
+        pass
     app.config['DEBUG'] = True
     # Configure CORS: allow API access from the frontend during local development
     # Use a resource pattern for only API routes and allow all origins to avoid
@@ -33,9 +47,9 @@ def create_app():
     # Configure app
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max file size
     # Register blueprints
-    from api.style_analysis import style_analysis_bp
-    from api.wardrobe import wardrobe_bp
-    from api.shopping import shopping_bp
+    from app.api.style_analysis import style_analysis_bp
+    from app.api.wardrobe import wardrobe_bp
+    from app.api.shopping import shopping_bp
     app.register_blueprint(style_analysis_bp, url_prefix='/api/style')
     app.register_blueprint(wardrobe_bp, url_prefix='/api/wardrobe')
     app.register_blueprint(shopping_bp, url_prefix='/api/shopping')

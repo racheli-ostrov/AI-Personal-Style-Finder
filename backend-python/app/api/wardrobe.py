@@ -17,6 +17,20 @@ def get_all_items():
     return jsonify({"success": True, "data": items})
 
 
+@wardrobe_bp.route("/", methods=["POST"])
+def add_item():
+    data = request.get_json() or {}
+    user_id = data.get("userId")
+    image_info = data.get("imageInfo")
+    analysis = data.get("analysis") or {}
+
+    if not user_id or not image_info:
+        return jsonify({"success": False, "error": "userId and imageInfo required"}), 400
+
+    item = wardrobe_service.add_item(user_id, image_info, analysis)
+    return jsonify({"success": True, "data": item}), 201
+
+
 @wardrobe_bp.route("/", methods=["DELETE"])
 def clear_wardrobe():
     user_id = request.args.get("userId")
