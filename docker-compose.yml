@@ -4,7 +4,7 @@ services:
   # Backend service (Python)
   backend:
     build:
-      context: ./backend-python
+      context: ./backend
       dockerfile: Dockerfile
     container_name: style-finder-backend
     ports:
@@ -16,7 +16,12 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - RESET_DB_ON_START=true
     restart: unless-stopped
+<<<<<<< HEAD
     # No host bind-mount for /app/db so the SQLite DB is ephemeral
+=======
+    volumes:
+      - ./backend/app/db:/app/db
+>>>>>>> 630ea82b981a5dd1723ad1b206f9e9cecae3ba72
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
       interval: 5s

@@ -5,8 +5,13 @@ import os
 import sys
 import pytest
 
+<<<<<<<< HEAD:backend/tests/conftest.py
 # Add backend-python (parent folder) to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+========
+# Add backend to path
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+>>>>>>>> 630ea82b981a5dd1723ad1b206f9e9cecae3ba72:backend/conftest.py
 
 # Set test environment
 os.environ['NODE_ENV'] = 'test'

@@ -8,14 +8,14 @@
 להריץ את כל הבדיקות:
 ```
 $env:PYTHONPATH = $PWD
-& ".venv/Scripts/python.exe" -m pytest backend-python/tests
+& ".venv/Scripts/python.exe" -m pytest backend/tests
 ```
 להריץ עם דוח כיסוי:
 ```
 $env:PYTHONPATH = $PWD
-& ".venv/Scripts/python.exe" -m pytest --cov=. backend-python/tests
+& ".venv/Scripts/python.exe" -m pytest --cov=. backend/tests
 ```
-דוח HTML ייווצר בתיקיית backend-python/htmlcov
+דוח HTML ייווצר בתיקיית backend/htmlcov
 
 ### Frontend (React)
 להריץ את כל הבדיקות:
@@ -48,11 +48,11 @@ Coverage HTML written to dir htmlcov
 ## Backend (Python)
 להריץ את כל הבדיקות:
 ```
-pytest backend-python/tests
+pytest backend/tests
 ```
 להריץ עם דוח כיסוי:
 ```
-pytest --cov=backend-python backend-python/tests
+pytest --cov=backend backend/tests
 ```
 
 ## Frontend (React)
