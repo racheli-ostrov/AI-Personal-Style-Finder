@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import CameraCapture from './CameraCapture';
 
 /**
@@ -35,9 +36,10 @@ describe('CameraCapture – Stable Unit Tests', () => {
 
     render(<CameraCapture onCapture={onCapture} onClose={onClose} />);
 
-    expect(screen.getByText(/take a photo/i)).toBeInTheDocument();
-    expect(screen.getByText(/capture/i)).toBeInTheDocument();
-    expect(screen.getByText(/cancel/i)).toBeInTheDocument();
+expect(await screen.findByText(/take a photo/i)).toBeInTheDocument();
+expect(await screen.findByText(/capture/i)).toBeInTheDocument();
+expect(await screen.findByText(/cancel/i)).toBeInTheDocument();
+
   });
 
   test('לחיצה על Cancel מפעילה onClose', async () => {
