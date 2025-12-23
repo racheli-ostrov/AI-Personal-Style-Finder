@@ -45,11 +45,13 @@ class WardrobeService:
                 except Exception:
                     # Fallback: keep original string
                     data[key] = data[key]
-        # Expose convenient top-level image fields for frontend compatibility
+        # Expose convenient top-level image fields and camelCase keys for tests/frontend
         img = data.get("image_info") or {}
         if isinstance(img, dict):
             data["imageData"] = img.get("data")
             data["imageUrl"] = img.get("url")
+            # Provide `imageInfo` key (camelCase) expected by tests
+            data["imageInfo"] = img
 
         # Normalize favorite to boolean
         if "favorite" in data:
@@ -57,6 +59,14 @@ class WardrobeService:
                 data["favorite"] = bool(int(data["favorite"]))
             except Exception:
                 data["favorite"] = bool(data["favorite"])
+
+        # Provide camelCase `addedAt` and normalize `analysis` key name
+        if "added_at" in data and "addedAt" not in data:
+            data["addedAt"] = data.get("added_at")
+
+        # Ensure 'analysis' is present as a dict (parsed above)
+        if "analysis" in data and data["analysis"] is None:
+            data["analysis"] = {}
 
         return data
 
@@ -83,6 +93,12 @@ class WardrobeService:
         conn.commit()
         last_id = cursor.lastrowid
         row = conn.execute("SELECT * FROM wardrobe WHERE id=?", (last_id,)).fetchone()
+        conn.close()
+        return self._parse_row(row)
+
+    def get_item_by_id(self, user_id, item_id):
+        conn = get_db()
+        row = conn.execute("SELECT * FROM wardrobe WHERE id=? AND user_id=?", (item_id, user_id)).fetchone()
         conn.close()
         return self._parse_row(row)
 
@@ -114,9 +130,11 @@ class WardrobeService:
 
     def delete_item(self, user_id, item_id):
         conn = get_db()
-        conn.execute("DELETE FROM wardrobe WHERE id=? AND user_id=?", (item_id, user_id))
+        cursor = conn.execute("DELETE FROM wardrobe WHERE id=? AND user_id=?", (item_id, user_id))
         conn.commit()
+        deleted = cursor.rowcount if hasattr(cursor, 'rowcount') else None
         conn.close()
+        return bool(deleted)
 
     def get_statistics(self, user_id):
         conn = get_db()
@@ -135,9 +153,9 @@ class WardrobeService:
             type_counts[t] = type_counts.get(t, 0) + 1
 
         return {
-            "total": total,
-            "favorites": favorites,
-            "by_type": type_counts
+            "totalItems": total,
+            "favoriteCount": favorites,
+            "byType": type_counts
         }
 
 

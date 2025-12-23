@@ -42,5 +42,17 @@ class StyleAnalysisService:
             "statistics": stats,
             "generatedAt": datetime.now().isoformat()
         }
+    def get_recommendations(self, user_id: str, item_id: int):
+        """Return similar item recommendations for a given item using Gemini service."""
+        items = wardrobe_service.get_all_items(user_id)
+        # find the item
+        target = None
+        for it in items:
+            if it.get('id') == item_id:
+                target = it
+                break
+        if not target:
+            return []
+        return gemini_service.find_similar_items(target, items)
 
 style_analysis_service = StyleAnalysisService()
