@@ -30,7 +30,7 @@ jest.mock('../CameraCapture/CameraCapture', () => ({
   __esModule: true,
   default: ({ onCapture, onClose }: any) => (
     <div>
-      <button onClick={() => onCapture(new File(['img'], 'photo.jpg'))}>
+      <button onClick={() => onCapture({ name: 'photo.jpg', type: 'image/jpeg', size: 123 })}>
         Capture
       </button>
       <button onClick={onClose}>Close Camera</button>
