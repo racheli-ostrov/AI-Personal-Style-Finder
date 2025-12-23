@@ -191,6 +191,13 @@ Provide accurate and specific information based on what you see in the image.
             wardrobe_summary = []
             for item in wardrobe_items:
                 analysis = item.get('analysis', {})
+                # If analysis was stored as a JSON string, try to parse it
+                if isinstance(analysis, str):
+                    try:
+                        analysis = json.loads(analysis)
+                    except Exception:
+                        analysis = {"type": analysis}
+
                 wardrobe_summary.append({
                     'type': analysis.get('type', 'unknown'),
                     'colors': analysis.get('colors', []),
@@ -290,11 +297,22 @@ Be specific and personalized based on the actual wardrobe items."""
         """
         try:
             item_analysis = item.get('analysis', {})
+            if isinstance(item_analysis, str):
+                try:
+                    item_analysis = json.loads(item_analysis)
+                except Exception:
+                    item_analysis = {"type": item_analysis}
             
             wardrobe_summary = []
             for wardrobe_item in wardrobe_items:
                 if wardrobe_item['id'] != item['id']:
                     analysis = wardrobe_item.get('analysis', {})
+                    if isinstance(analysis, str):
+                        try:
+                            analysis = json.loads(analysis)
+                        except Exception:
+                            analysis = {"type": analysis}
+
                     wardrobe_summary.append({
                         'id': wardrobe_item['id'],
                         'type': analysis.get('type', 'unknown'),

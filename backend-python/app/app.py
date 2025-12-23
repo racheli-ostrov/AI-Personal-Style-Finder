@@ -26,14 +26,16 @@ def create_app():
     """Create and configure the Flask application"""
     app = Flask(__name__)
     app.config['DEBUG'] = True
-    # Configure CORS
-    CORS(app, origins=[os.getenv('FRONTEND_URL', 'http://localhost:3000')])
+    # Configure CORS: allow API access from the frontend during local development
+    # Use a resource pattern for only API routes and allow all origins to avoid
+    # mismatched host/port issues when the frontend is served on port 80.
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     # Configure app
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max file size
     # Register blueprints
-    from routes.style_analysis import style_analysis_bp
-    from routes.wardrobe import wardrobe_bp
-    from routes.shopping import shopping_bp
+    from api.style_analysis import style_analysis_bp
+    from api.wardrobe import wardrobe_bp
+    from api.shopping import shopping_bp
     app.register_blueprint(style_analysis_bp, url_prefix='/api/style')
     app.register_blueprint(wardrobe_bp, url_prefix='/api/wardrobe')
     app.register_blueprint(shopping_bp, url_prefix='/api/shopping')

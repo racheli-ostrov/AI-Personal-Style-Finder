@@ -31,4 +31,4 @@ RUN unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY && \
 
 COPY . .
 
-CMD ["/bin/sh", "-c", "unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; python app.py"]
+CMD ["/bin/sh", "-c", "unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; python app/app.py"]

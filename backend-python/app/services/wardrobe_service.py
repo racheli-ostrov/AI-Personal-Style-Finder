@@ -1,128 +1,144 @@
-"""
-Wardrobe Service
-Business logic for managing wardrobe items
-"""
-
-# --- SQLite-based implementation ---
 import sqlite3
 import os
-from typing import Dict, List, Optional, Any
+import sqlite3
+import os
+import json
 from datetime import datetime
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'db', 'wardrobe.sqlite3')
+DB_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "db", "wardrobe.sqlite3")
+)
 
 def get_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('''
+    # Ensure schema exists (safe to call every time)
+    try:
+        conn.execute("""
         CREATE TABLE IF NOT EXISTS wardrobe (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT NOT NULL,
             image_info TEXT,
-            image_data TEXT,
             analysis TEXT,
-            added_at TEXT,
-            favorite INTEGER DEFAULT 0
-        )
-    ''')
-    conn.commit()
-    conn.close()
+            favorite INTEGER DEFAULT 0,
+            added_at TEXT
+        );
+        """)
+        conn.commit()
+    except Exception:
+        # If schema creation fails, propagate later; but don't crash here
+        pass
+    return conn
 
-init_db()
 
 class WardrobeService:
-    def get_all_items(self, user_id: str) -> List[Dict]:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute('SELECT * FROM wardrobe WHERE user_id=?', (user_id,))
-        rows = c.fetchall()
-        items = []
-        for row in rows:
-            items.append({
-                'id': row['id'],
-                'userId': row['user_id'],
-                'imageInfo': eval(row['image_info']) if row['image_info'] else {},
-                'imageData': row['image_data'],
-                'analysis': eval(row['analysis']) if row['analysis'] else {},
-                'addedAt': row['added_at'],
-                'favorite': bool(row['favorite'])
-            })
-        conn.close()
-        return items
-
-    def add_item(self, user_id: str, image_info: Dict, analysis: Dict) -> Dict:
-        conn = get_db()
-        c = conn.cursor()
-        image_data = image_info.get('data', '')
-        c.execute('''
-            INSERT INTO wardrobe (user_id, image_info, image_data, analysis, added_at, favorite)
-            VALUES (?, ?, ?, ?, ?, 0)
-        ''', (user_id, str(image_info), image_data, str(analysis), datetime.now().isoformat()))
-        item_id = c.lastrowid
-        conn.commit()
-        conn.close()
-        return self.get_item_by_id(user_id, item_id)
-
-    def get_item_by_id(self, user_id: str, item_id: int) -> Optional[Dict]:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute('SELECT * FROM wardrobe WHERE user_id=? AND id=?', (user_id, item_id))
-        row = c.fetchone()
-        conn.close()
+    def _parse_row(self, row):
         if not row:
             return None
-        return {
-            'id': row['id'],
-            'userId': row['user_id'],
-            'imageInfo': eval(row['image_info']) if row['image_info'] else {},
-            'imageData': row['image_data'],
-            'analysis': eval(row['analysis']) if row['analysis'] else {},
-            'addedAt': row['added_at'],
-            'favorite': bool(row['favorite'])
-        }
+        data = dict(row)
+        # Parse JSON fields if stored as strings
+        for key in ("image_info", "analysis"):
+            if key in data and data[key] is not None:
+                try:
+                    data[key] = json.loads(data[key]) if isinstance(data[key], str) else data[key]
+                except Exception:
+                    # Fallback: keep original string
+                    data[key] = data[key]
+        # Expose convenient top-level image fields for frontend compatibility
+        img = data.get("image_info") or {}
+        if isinstance(img, dict):
+            data["imageData"] = img.get("data")
+            data["imageUrl"] = img.get("url")
 
-    def delete_item(self, user_id: str, item_id: int) -> bool:
+        # Normalize favorite to boolean
+        if "favorite" in data:
+            try:
+                data["favorite"] = bool(int(data["favorite"]))
+            except Exception:
+                data["favorite"] = bool(data["favorite"])
+
+        return data
+
+    def get_all_items(self, user_id):
         conn = get_db()
-        c = conn.cursor()
-        c.execute('DELETE FROM wardrobe WHERE user_id=? AND id=?', (user_id, item_id))
-        deleted = c.rowcount > 0
-        conn.commit()
+        rows = conn.execute(
+            "SELECT * FROM wardrobe WHERE user_id=?",
+            (user_id,)
+        ).fetchall()
         conn.close()
-        return deleted
+        return [self._parse_row(row) for row in rows]
 
-    def toggle_favorite(self, user_id: str, item_id: int) -> Optional[Dict]:
+    def add_item(self, user_id, image_info, analysis):
         conn = get_db()
-        c = conn.cursor()
-        c.execute('SELECT favorite FROM wardrobe WHERE user_id=? AND id=?', (user_id, item_id))
-        row = c.fetchone()
+        # Store JSON strings for structured data
+        image_json = json.dumps(image_info)
+        analysis_json = json.dumps(analysis)
+        cursor = conn.execute(
+            """INSERT INTO wardrobe
+               (user_id, image_info, analysis, added_at)
+               VALUES (?, ?, ?, ?)""",
+            (user_id, image_json, analysis_json, datetime.now().isoformat())
+        )
+        conn.commit()
+        last_id = cursor.lastrowid
+        row = conn.execute("SELECT * FROM wardrobe WHERE id=?", (last_id,)).fetchone()
+        conn.close()
+        return self._parse_row(row)
+
+    def toggle_favorite(self, user_id, item_id):
+        conn = get_db()
+        row = conn.execute(
+            "SELECT favorite FROM wardrobe WHERE id=? AND user_id=?",
+            (item_id, user_id)
+        ).fetchone()
+
         if not row:
             conn.close()
             return None
-        new_fav = 0 if row['favorite'] else 1
-        c.execute('UPDATE wardrobe SET favorite=? WHERE user_id=? AND id=?', (new_fav, user_id, item_id))
+
+        new_value = 0 if row["favorite"] else 1
+        conn.execute(
+            "UPDATE wardrobe SET favorite=? WHERE id=? AND user_id=?",
+            (new_value, item_id, user_id)
+        )
         conn.commit()
         conn.close()
-        return self.get_item_by_id(user_id, item_id)
+        return {"id": item_id, "favorite": bool(new_value)}
 
-    def clear_wardrobe(self, user_id: str) -> None:
+    def clear_wardrobe(self, user_id):
         conn = get_db()
-        c = conn.cursor()
-        c.execute('DELETE FROM wardrobe WHERE user_id=?', (user_id,))
+        conn.execute("DELETE FROM wardrobe WHERE user_id=?", (user_id,))
         conn.commit()
         conn.close()
 
-    def get_statistics(self, user_id: str) -> Dict[str, Any]:
+    def delete_item(self, user_id, item_id):
         conn = get_db()
-        c = conn.cursor()
-        c.execute('SELECT COUNT(*) as count FROM wardrobe WHERE user_id=?', (user_id,))
-        count = c.fetchone()['count']
+        conn.execute("DELETE FROM wardrobe WHERE id=? AND user_id=?", (item_id, user_id))
+        conn.commit()
         conn.close()
-        return {'totalItems': count}
+
+    def get_statistics(self, user_id):
+        conn = get_db()
+        total = conn.execute("SELECT COUNT(*) as cnt FROM wardrobe WHERE user_id=?", (user_id,)).fetchone()["cnt"]
+        favorites = conn.execute("SELECT COUNT(*) as cnt FROM wardrobe WHERE user_id=? AND favorite=1", (user_id,)).fetchone()["cnt"]
+        rows = conn.execute("SELECT analysis FROM wardrobe WHERE user_id=?", (user_id,)).fetchall()
+        conn.close()
+
+        type_counts = {}
+        for r in rows:
+            try:
+                analysis = json.loads(r["analysis"]) if isinstance(r["analysis"], str) else r["analysis"]
+                t = analysis.get("type") or analysis.get("clothing_type") or "unknown"
+            except Exception:
+                t = "unknown"
+            type_counts[t] = type_counts.get(t, 0) + 1
+
+        return {
+            "total": total,
+            "favorites": favorites,
+            "by_type": type_counts
+        }
+
 
 wardrobe_service = WardrobeService()

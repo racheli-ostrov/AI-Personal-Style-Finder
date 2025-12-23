@@ -16,7 +16,7 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: unless-stopped
     volumes:
-      - wardrobe_db:/app/db
+      - ./backend-python/app/db:/app/db
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
       interval: 5s
