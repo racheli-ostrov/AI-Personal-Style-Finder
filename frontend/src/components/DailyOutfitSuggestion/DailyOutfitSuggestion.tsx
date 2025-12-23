@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WardrobeItem } from '../types';
+import { WardrobeItem } from '../../types';
 import './DailyOutfitSuggestion.css';
 
 interface DailyOutfitSuggestionProps {

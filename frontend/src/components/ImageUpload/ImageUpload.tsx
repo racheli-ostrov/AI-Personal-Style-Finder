@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone, DropzoneOptions } from 'react-dropzone';
-import { styleAPI } from '../services/api';
-import CameraCapture from './CameraCapture/CameraCapture';
+import { styleAPI } from '../../services/api';
+import CameraCapture from '../CameraCapture/CameraCapture';
 import './ImageUpload.css';
 
 interface ImageUploadProps {
